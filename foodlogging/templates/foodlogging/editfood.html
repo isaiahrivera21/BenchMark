@@ -1,0 +1,16 @@
+<!-- foodlogging/templates/foodlogging/editfood.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Food</title>
+</head>
+<body>
+    <h1>Edit {{ food.food_name }}</h1>
+    <form method="post" action="{% url 'edit_food' food.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Changes</button>
+        <a href="{% url 'index' %}">Cancel</a>
+    </form>
+</body>
+</html>

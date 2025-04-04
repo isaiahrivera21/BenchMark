@@ -1,0 +1,25 @@
+<!-- templates/exerciselogging/list_all_exercise.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Exercises</title>
+</head>
+<body>
+    <h1>My Logged Exercises</h1>
+
+    {% if exercises %}
+        <ul>
+            {% for exercise in exercises %}
+                <li>
+                    {{ exercise }}
+                    <!-- Add other fields as needed -->
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No exercises found for user ID: {{ request.user.id }}</p>
+    {% endif %}
+
+    <a href="{% url 'index' %}">Back to Home</a>
+</body>
+</html>

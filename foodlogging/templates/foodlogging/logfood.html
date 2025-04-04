@@ -1,0 +1,15 @@
+<!-- foodlogging/templates/foodlogging/logfood.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Log Food</title>
+</head>
+<body>
+    <h1>Log Food</h1>
+    <form method="post">
+        {% csrf_token %}  <!-- Add CSRF token -->
+        {{ form.as_p }}    <!-- Render form fields -->
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

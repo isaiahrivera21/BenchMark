@@ -1,0 +1,15 @@
+<!-- exerciselogging/templates/exerciselogging/logexercise.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Log Exercise</title>
+</head>
+<body>
+    <h1>Log Exercise</h1>
+    <form method="post">
+        {% csrf_token %}  <!-- Add CSRF token -->
+        {{ form.as_p }}    <!-- Render form fields -->
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

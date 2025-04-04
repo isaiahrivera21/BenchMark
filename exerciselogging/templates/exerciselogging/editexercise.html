@@ -1,0 +1,16 @@
+<!-- exerciselogging/templates/exerciselogging/editexercise.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Exercise</title>
+</head>
+<body>
+    <h1>Edit {{ exercise.exercise_name }}</h1>
+    <form method="post" action="{% url 'edit_exercise' exercise.id %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Changes</button>
+        <a href="{% url 'index' %}">Cancel</a>
+    </form>
+</body>
+</html>

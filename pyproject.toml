@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "databases-final-project"
+version = "0.1.0"
+description = ""
+authors = ["isaiahrivera21 <isaiahcooperdump@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+asgiref = "3.8.1"
+django = "5.1.7"
+psycopg2 = "2.9.10"
+psycopg2-binary = "2.9.10"
+sqlparse = "0.5.3"
+python-dotenv = "^1.0.1"
+requests = "^2.32.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

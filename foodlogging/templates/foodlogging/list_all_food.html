@@ -1,0 +1,25 @@
+<!-- templates/foodlogging/list_all_food.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Foods</title>
+</head>
+<body>
+    <h1>My Logged Foods</h1>
+
+    {% if foods %}
+        <ul>
+            {% for food in foods %}
+                <li>
+                    {{ food }}
+                    <!-- Add other fields as needed -->
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No foods found for user ID: {{ request.user.id }}</p>
+    {% endif %}
+
+    <a href="{% url 'index' %}">Back to Home</a>
+</body>
+</html>
