@@ -18,7 +18,7 @@ class UserLoggedFood(models.Model):
     ]   
 
     food_name = models.CharField(max_length=200)
-    food_logged_at = models.DateTimeField("food date")
+    food_logged_at = models.DateTimeField(auto_now_add=True)
     meal_type = models.CharField(choices=MEAL_CHOICES)
     serving_size = models.IntegerField() # should probably set to a default value of 1 
     calories = models.IntegerField()

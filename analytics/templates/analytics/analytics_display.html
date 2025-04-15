@@ -1,0 +1,18 @@
+<!-- templates/analytics/analytics_display.html -->
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Real-Time Metrics</title>
+    <script src="{% static 'analytics/js/metrics.js' %}"></script>
+</head>
+<body>
+    <h1>Real-Time Metrics</h1>
+    <div id="metrics-display">
+        <p>Volume Change: <span id="volume-change">-</span></p>
+        <p>Weight/Rep Change: <span id="weight-per-rep-change">-</span></p>
+        <p>Rep Change: <span id="rep-change">-</span></p>
+        <p>Set Change: <span id="set-change">-</span></p>
+    </div>
+</body>
+</html>

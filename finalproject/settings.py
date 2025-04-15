@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from django.urls import reverse_lazy
+import os 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +33,8 @@ AUTH_USER_MODEL = 'user.CustomUser'
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
+    "channels",
     "exerciserepo.apps.ExerciserepoConfig",
     "foodrepo.apps.FoodrepoConfig",
     "analytics.apps.AnalyticsConfig",
@@ -77,6 +80,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "finalproject.wsgi.application"
 
+
+# Use ASGI for the server
+ASGI_APPLICATION = "finalproject.routing.application"
+
+# Channel layer configuration (use Redis in production)
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(os.environ.get('REDIS_HOST', 'localhost'), os.environ.get('REDIS_PORT', 6379))]
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -139,6 +155,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+
+# STATICFILES_DIRS = [
+#     BASE_DIR / "static",  # Path to a project-wide static directory
+# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

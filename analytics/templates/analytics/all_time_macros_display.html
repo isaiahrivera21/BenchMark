@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Time Macros Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>All Time Macros Dashboard</h1>
+    <table id="macros-table">
+        <thead>
+            <tr>
+                <th>Average Calories</th>
+                <th>Average Fat</th>
+                <th>Average Carbohydrates</th>
+                <th>Average Protein</th>
+                <th>Average Cholesterol</th>
+                <th>Average Sodium</th>
+            </tr>
+        </thead>
+        <tbody id="macros-data">
+            <tr>
+                <td id="average-calories">N/A</td>
+                <td id="average-fat">N/A</td>
+                <td id="average-carbs">N/A</td>
+                <td id="average-protein">N/A</td>
+                <td id="average-cholesterol">N/A</td>
+                <td id="average-sodium">N/A</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script src="{% static 'analytics/js/all_time_macros.js' %}"></script>
+</body>
+</html>
