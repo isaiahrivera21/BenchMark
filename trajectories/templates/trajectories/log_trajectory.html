@@ -1,0 +1,68 @@
+<!-- templates/trajectory/log_trajectory.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Log Trajectory</title>
+    <script>
+        function updateFocusArea() {
+            const goalType = document.getElementById('id_goal_type').value;
+            const focusAreaContainer = document.getElementById('focus_area_container');
+            
+            if (goalType === 'FOOD') {
+                // Create a dropdown for food goals
+                const foodChoices = [
+                    ['CALORIES', 'Calories'],
+                    ['CARBS', 'Carbohydrates'],
+                    ['PROTEIN', 'Protein'],
+                    ['SODIUM', 'Sodium']
+                ];
+                
+                let dropdownHTML = '<select id="id_focus_area" name="focus_area">';
+                foodChoices.forEach(choice => {
+                    dropdownHTML += `<option value="${choice[0]}">${choice[1]}</option>`;
+                });
+                dropdownHTML += '</select>';
+                focusAreaContainer.innerHTML = dropdownHTML;
+            } else if (goalType === 'EXERCISE') {
+                // Create a text input for exercise goals
+                focusAreaContainer.innerHTML = '<input type="text" id="id_focus_area" name="focus_area" placeholder="Enter exercise name">';
+            } else {
+                // Default to empty container
+                focusAreaContainer.innerHTML = '';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Log New Trajectory</h1>
+    <form method="post">
+        {% csrf_token %}
+        
+        <label for="id_pace_type">Pace Type:</label>
+        {{ form.pace_type }}<br>
+        
+        <label for="id_target_date">Target Date:</label>
+        {{ form.target_date }}<br>
+        
+        <label for="id_objective">Objective:</label>
+        {{ form.objective }}<br>
+        
+        <label for="id_goal_type">Goal Type:</label>
+        <select id="id_goal_type" name="goal_type" onchange="updateFocusArea()">
+            <option value="">----</option>
+            <option value="FOOD">Food</option>
+            <option value="EXERCISE">Exercise</option>
+        </select><br>
+        
+        <div id="focus_area_container">
+            <label for="id_focus_area">Focus Area:</label>
+            <!-- Focus area input will be populated by JavaScript -->
+        </div><br>
+
+        <label for="id_amount">Amount:</label>
+        {{ form.amount }}<br>
+        
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>
