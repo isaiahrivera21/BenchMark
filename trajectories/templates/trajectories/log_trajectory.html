@@ -1,9 +1,31 @@
-<!-- templates/trajectory/log_trajectory.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <title>Log Trajectory</title>
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+        }
+    </style>
     <script>
+        function updateFields() {
+            const objective = document.getElementById('id_objective').value;
+            const currentAmountContainer = document.getElementById('current_amount_container');
+            const futureAmountContainer = document.getElementById('future_amount_container');
+            const sameValueContainer = document.getElementById('same_value_container');
+            
+            if (objective === 'SAME') {
+                currentAmountContainer.style.display = 'none';
+                futureAmountContainer.style.display = 'none';
+                sameValueContainer.style.display = 'block';
+            } else {
+                currentAmountContainer.style.display = 'block';
+                futureAmountContainer.style.display = 'block';
+                sameValueContainer.style.display = 'none';
+            }
+        }
+
         function updateFocusArea() {
             const goalType = document.getElementById('id_goal_type').value;
             const focusAreaContainer = document.getElementById('focus_area_container');
@@ -14,7 +36,9 @@
                     ['CALORIES', 'Calories'],
                     ['CARBS', 'Carbohydrates'],
                     ['PROTEIN', 'Protein'],
-                    ['SODIUM', 'Sodium']
+                    ['SODIUM', 'Sodium'],
+                    ['FAT', 'Fat'],
+                    ['CHOLESTOROL', 'Cholesterol']
                 ];
                 
                 let dropdownHTML = '<select id="id_focus_area" name="focus_area">';
@@ -38,6 +62,20 @@
     <form method="post">
         {% csrf_token %}
         
+        <!-- Display form errors -->
+        {% if form.errors %}
+            <div class="error-message">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <strong>{{ field.label }}:</strong> {{ error }}<br>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    {{ error }}<br>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
         <label for="id_pace_type">Pace Type:</label>
         {{ form.pace_type }}<br>
         
@@ -45,7 +83,12 @@
         {{ form.target_date }}<br>
         
         <label for="id_objective">Objective:</label>
-        {{ form.objective }}<br>
+        <select id="id_objective" name="objective" onchange="updateFields()">
+            <option value="">----</option>
+            <option value="INCREASE">Increase</option>
+            <option value="DECREASE">Decrease</option>
+            <option value="SAME">Same</option>
+        </select><br>
         
         <label for="id_goal_type">Goal Type:</label>
         <select id="id_goal_type" name="goal_type" onchange="updateFocusArea()">
@@ -59,10 +102,44 @@
             <!-- Focus area input will be populated by JavaScript -->
         </div><br>
 
-        <label for="id_amount">Amount:</label>
-        {{ form.amount }}<br>
+        <div id="current_amount_container">
+            <label for="id_current_amount">Current Amount:</label>
+            {{ form.current_amount }}<br>
+            {% if form.current_amount.errors %}
+                <div class="error-message">
+                    {{ form.current_amount.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div id="future_amount_container">
+            <label for="id_future_amount">Goal:</label>
+            {{ form.future_amount }}<br>
+            {% if form.future_amount.errors %}
+                <div class="error-message">
+                    {{ form.future_amount.errors }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div id="same_value_container" style="display: none;">
+            <label for="id_same_value">Value:</label>
+            {{ form.same_value }}<br>
+            {% if form.same_value.errors %}
+                <div class="error-message">
+                    {{ form.same_value.errors }}
+                </div>
+            {% endif %}
+        </div>
         
         <button type="submit">Save</button>
     </form>
+
+    <script>
+        // Initialize the fields based on the initial objective value
+        window.onload = function() {
+            updateFields();
+        };
+    </script>
 </body>
 </html>
