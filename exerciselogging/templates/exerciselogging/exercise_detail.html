@@ -1,0 +1,20 @@
+<h1>Logs for {{ exercise_name }}</h1>
+
+<a href="{% url 'log_exercise' %}?exercise_name={{ exercise_name }}" class="add-log-btn">
+    <button>Add Another Log</button>
+</a>
+
+{% for log in exercise_logs %}
+    <div class="exercise-log-entry">
+        <h3>{{ log.exercise_name }} ({{ log.exercise_logged_at|date:"Y-m-d H:i" }})</h3>
+        
+        <p><strong>Sets:</strong> {{ log.sets }}</p>
+        <p><strong>Reps:</strong> {{ log.reps }}</p>
+        <p><strong>Weight:</strong> {{ log.weight }} lbs</p>
+        <p><strong>Notes:</strong> {{ log.notes }}</p>
+        
+        <hr>
+    </div>
+{% empty %}
+    <p>No logs found for {{ exercise_name }}.</p>
+{% endfor %}

@@ -1,0 +1,13 @@
+<h1>Exercise History</h1>
+
+<a href="{% url 'log_exercise' %}" class="new-exercise-btn">
+    <button>Log New Exercise</button>
+</a>
+
+<ul>
+    {% for exercise_name in unique_exercises %}
+        <li>
+            <a href="{% url 'exercise_detail' exercise_name=exercise_name %}">{{ exercise_name }}</a>
+        </li>
+    {% endfor %}
+</ul>

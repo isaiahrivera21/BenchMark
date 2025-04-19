@@ -35,6 +35,7 @@ urlpatterns = [
     path('', RedirectView.as_view(url='/create-user/', permanent=True)),
     path('create-user/', user_views.create_user, name='create_user'),
     path('homepage/',include("homepage.urls"),name='homepage'),
-    path('exercise/', exercise_views.log_exercise, name='log_exercise'),
+    path('log_exercise/', exercise_views.log_exercise, name='log_exercise'),
+    path('exercise/', exercise_views.exercise_homepage, name='exercise_homepage'),
     path('food/', food_views.log_food, name='log_food'),
 ]
