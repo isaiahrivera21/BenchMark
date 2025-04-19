@@ -10,6 +10,9 @@ from .forms import CustomUserCreationForm  # Import the new form
 def index(request):
     return HttpResponse("Hello, world. You're at the user index.")
 
+def redirect_to_create_user(request):
+    return redirect('create_user')
+
 def create_user(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)

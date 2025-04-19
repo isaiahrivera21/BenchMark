@@ -16,7 +16,13 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.views.generic.base import RedirectView
 from django.urls import include,path
+from user import views as user_views
+from homepage import views as homepage_views
+from analytics import views as analytics_views
+from exerciselogging import views as exercise_views
+from foodlogging import views as food_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -25,5 +31,10 @@ urlpatterns = [
     path("foodlogging/", include("foodlogging.urls")),
     path("macrosAI/", include("macrosAI.urls")),
     path("trajectories/", include("trajectories.urls")),
-    path("user/", include("user.urls"))
+    path("user/", include("user.urls")),
+    path('', RedirectView.as_view(url='/create-user/', permanent=True)),
+    path('create-user/', user_views.create_user, name='create_user'),
+    path('homepage/',include("homepage.urls"),name='homepage'),
+    path('exercise/', exercise_views.log_exercise, name='log_exercise'),
+    path('food/', food_views.log_food, name='log_food'),
 ]

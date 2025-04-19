@@ -35,6 +35,7 @@ AUTH_USER_MODEL = 'user.CustomUser'
 INSTALLED_APPS = [
     "daphne",
     "channels",
+    "homepage.apps.HomepageConfig",
     "exerciserepo.apps.ExerciserepoConfig",
     "foodrepo.apps.FoodrepoConfig",
     "analytics.apps.AnalyticsConfig",
