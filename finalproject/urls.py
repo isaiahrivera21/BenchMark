@@ -37,5 +37,6 @@ urlpatterns = [
     path('homepage/',include("homepage.urls"),name='homepage'),
     path('log_exercise/', exercise_views.log_exercise, name='log_exercise'),
     path('exercise/', exercise_views.exercise_homepage, name='exercise_homepage'),
-    path('food/', food_views.log_food, name='log_food'),
+    path('food/', food_views.food_homepage, name='food_homepage'),
+    path('log_food/', food_views.log_food, name='log_food'),
 ]

@@ -10,7 +10,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.db.models import Avg
 
-def create_exercise_metric(metric_name,metric_value,user):
+def create_exercise_metric(metric_name,metric_value,user,item):
 
     # TODO: think my analytics need a user associated with it 
     Analytics.objects.create(
@@ -18,7 +18,8 @@ def create_exercise_metric(metric_name,metric_value,user):
         period_type = "Session",
         value = metric_value,
         value_type = "Percentage",
-        user = user
+        user = user,
+        item_name = item
     )
 
 def create_average_macro_metric(user, foods, time_range):
@@ -40,7 +41,8 @@ def create_average_macro_metric(user, foods, time_range):
         period_type = time_range,
         value = averages['avg_calories'],
         value_type = "Numerical",
-        user = user
+        user = user,
+        item_name = ""
     )
 
     return averages
@@ -68,16 +70,16 @@ def generate_exercise_metric(sender, instance, created, **kwargs):
             p_weight = previous_log.weight
 
             volume_change = (l_sets*l_reps*l_weight) / (p_sets*p_reps*p_weight)
-            create_exercise_metric("Volume",volume_change,instance.user)
+            create_exercise_metric("Volume",volume_change,instance.user,instance.exercise_name)
 
             weight_per_rep_change = (l_weight/l_reps) / (p_weight/p_reps)
-            create_exercise_metric("Weigth/Rep",weight_per_rep_change,instance.user)
+            create_exercise_metric("Weigth/Rep",weight_per_rep_change,instance.user,instance.exercise_name)
 
             rep_change = l_reps / p_reps
-            create_exercise_metric("Rep Change",rep_change,instance.user)
+            create_exercise_metric("Rep Change",rep_change,instance.user,instance.exercise_name)
 
             set_change = l_sets / p_sets
-            create_exercise_metric("Set Change", set_change,instance.user)
+            create_exercise_metric("Set Change", set_change,instance.user,instance.exercise_name)
 
             metrics_data = {
                 "volume_change": volume_change,
