@@ -6,11 +6,54 @@ from .forms import UserLoggedFoodForm
 from .models import UserLoggedFood
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
+from analytics.models import Analytics
+from trajectories.models import Trajectory
+import json
 
 # NOTE: Edit the templates to work for food. 
 
 def index(request):
     return HttpResponse("Hello, world. You're at the food_logging index.")
+
+@login_required
+def food_homepage(request):
+    # Fetch the latest daily and monthly analytics based on highest ID
+    try:
+        latest_daily = Analytics.objects.filter(
+            user=request.user,
+            period_type='Daily'
+        ).latest('id')
+    except Analytics.DoesNotExist:
+        latest_daily = None
+
+    try:
+        latest_monthly = Analytics.objects.filter(
+            user=request.user,
+            period_type='Monthly'
+        ).latest('id')
+    except Analytics.DoesNotExist:
+        latest_monthly = None
+
+    # Fetch all food-related trajectories
+    food_trajectories = Trajectory.objects.filter(
+        user=request.user,
+        goal_type='FOOD'
+    )
+
+    # Prepare data for each trajectory
+    for trajectory in food_trajectories:
+        # Convert timestamps to string format
+        trajectory.labels = json.dumps([point.strftime('%Y-%m-%d') for point in trajectory.timestamps])
+        # Convert projected points to a serializable format
+        trajectory.data = json.dumps(trajectory.projected_points)
+
+    context = {
+        'latest_daily': latest_daily,
+        'latest_monthly': latest_monthly,
+        'food_trajectories': food_trajectories,
+    }
+
+    return render(request, 'foodlogging/food_homepage.html', context)
 
 @login_required
 def log_food(request):

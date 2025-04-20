@@ -6,10 +6,15 @@
 </head>
 <body>
     <h1>Log Exercise</h1>
+
     <form method="post">
-        {% csrf_token %}  <!-- Add CSRF token -->
-        {{ form.as_p }}    <!-- Render form fields -->
-        <button type="submit">Submit</button>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Log</button>
     </form>
+    
+    <a href="{% url 'exercise_homepage' %}">Back to Exercise List</a>
 </body>
 </html>
+
+

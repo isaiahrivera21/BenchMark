@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .add-food-btn, .set-goal-btn {
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .add-food-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .add-food-btn:hover {
+            background-color: #45a049;
+        }
+        .set-goal-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+        .set-goal-btn:hover {
+            background-color: #0b7dda;
+        }
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px auto;
+        }
+        .chart-container {
+            height: 200px;
+        }
+        .chart-title {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Food Dashboard</h1>
+        
+        <div class="button-container">
+            <a href="{% url 'log_food' %}" class="add-food-btn">Log New Food</a>
+            <a href="{% url 'create_trajectory' %}" class="set-goal-btn">Set Goal</a>
+        </div>
+
+        <h2>Food Goal Trajectories</h2>
+        <div class="charts-container">
+            {% for trajectory in food_trajectories %}
+                <div>
+                    <div class="chart-title">
+                        {{ trajectory.pace_type }} - {{ trajectory.objective }} - {{ trajectory.focus_area }}
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trajectoryChart-{{ trajectory.id }}"></canvas>
+                    </div>
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const labels = JSON.parse('{{ trajectory.labels|safe }}');
+                        const data = JSON.parse('{{ trajectory.data|safe }}');
+                        
+                        const ctx = document.getElementById('trajectoryChart-{{ trajectory.id }}').getContext('2d');
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: '{{ trajectory.objective }} {{ trajectory.focus_area }}',
+                                    data: data,
+                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                                    borderColor: 'rgb(75, 192, 192)',
+                                    borderWidth: 1,
+                                    tension: 0.2,
+                                    fill: true
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        });
+                    });
+                </script>
+            {% empty %}
+                <p>No food-related trajectories found.</p>
+            {% endfor %}
+        </div>
+        
+        {% if latest_daily %}
+            <h2>Latest Daily Analytics</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric Name</th>
+                        <th>Period Type</th>
+                        <th>Value</th>
+                        <th>Value Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ latest_daily.metric_name }}</td>
+                        <td>{{ latest_daily.period_type }}</td>
+                        <td>{{ latest_daily.value }}</td>
+                        <td>{{ latest_daily.value_type }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% else %}
+            <p>No daily analytics data available.</p>
+        {% endif %}
+        
+        {% if latest_monthly %}
+            <h2>Latest Monthly Analytics</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metric Name</th>
+                        <th>Period Type</th>
+                        <th>Value</th>
+                        <th>Value Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ latest_monthly.metric_name }}</td>
+                        <td>{{ latest_monthly.period_type }}</td>
+                        <td>{{ latest_monthly.value }}</td>
+                        <td>{{ latest_monthly.value_type }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% else %}
+            <p>No monthly analytics data available.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

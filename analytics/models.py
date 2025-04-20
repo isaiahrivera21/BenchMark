@@ -31,6 +31,7 @@ class Analytics(models.Model):
     period_type = models.CharField(choices=PERIOD_TYPE_CHOICES,null=False, blank=False)
     value = models.FloatField(null=False, blank=False)
     value_type = models.CharField(choices=VALUE_TYPE_CHOICES,null=False, blank=False,default="Session")
+    item_name = models.CharField(null=False, blank=True)
     user =  models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=True, blank=True)
 
     def __str__(self):
