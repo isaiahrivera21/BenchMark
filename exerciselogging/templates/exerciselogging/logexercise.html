@@ -1,20 +1,99 @@
-<!-- exerciselogging/templates/exerciselogging/logexercise.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <title>Log Exercise</title>
+    <style>
+        body {
+            background-color: #1E1E1E; /* Charcoal black */
+            color: #ffffff; /* White text */
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #2A2A2A;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #88FF88; /* Neon green */
+            margin-bottom: 25px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input[type="text"], input[type="number"] {
+            background-color: #333333;
+            border: none;
+            border-radius: 5px;
+            padding: 12px;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(136, 255, 136, 0.5); /* Green glow */
+        }
+
+        button[type="submit"] {
+            background-color: #88FF88; /* Neon green */
+            color: #1E1E1E; /* Dark text */
+            border: none;
+            border-radius: 5px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #72E372; /* Darker green */
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            color: #88FF88; /* Neon green */
+            text-decoration: none;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Log Exercise</h1>
-
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save Log</button>
-    </form>
-    
-    <a href="{% url 'exercise_homepage' %}">Back to Exercise List</a>
+    <div class="container">
+        <h1>Log Exercise</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Save Log</button>
+        </form>
+        
+        <div class="back-link">
+            <a href="{% url 'exercise_homepage' %}">Back to Exercise List</a>
+        </div>
+    </div>
 </body>
 </html>
-
-

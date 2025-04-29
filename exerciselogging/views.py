@@ -13,8 +13,6 @@ import json
 from trajectories.models import Trajectory
 from analytics.models import Analytics
 
-import inflect  # Install this package: pip install inflect
-
 def normalize_exercise_name(name):
     # Convert to lowercase
     name = name.lower()
