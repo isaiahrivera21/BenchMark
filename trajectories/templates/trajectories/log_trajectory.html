@@ -1,145 +1,189 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Log Trajectory</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log New Trajectory</title>
     <style>
+        body {
+            background-color: #1E1E1E; /* Charcoal black background */
+            color: #ffffff; /* White text */
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #2A2A2A;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #88FF88; /* Neon green text */
+            margin-bottom: 25px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        select, input[type="text"], input[type="date"], input[type="number"] {
+            width: 100%;
+            background-color: #333333;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        select:focus, input[type="text"]:focus, input[type="date"]:focus, input[type="number"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(136, 255, 136, 0.5); /* Green glow */
+        }
+
+        button[type="submit"] {
+            background-color: #88FF88; /* Neon green */
+            color: #1E1E1E; /* Dark text */
+            border: none;
+            border-radius: 5px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #72E372; /* Darker green */
+        }
+
         .error-message {
-            color: red;
+            color: #ff3333; /* Red text for errors */
             font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* Add margin bottom to form elements */
+        #focus_area_container,
+        #current_amount_container,
+        #future_amount_container,
+        #same_value_container {
+            margin-bottom: 15px;
         }
     </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Log New Trajectory</h1>
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Display form errors -->
+            {% if form.errors %}
+                <div class="error-message">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <strong>{{ field.label }}:</strong> {{ error }}<br>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        {{ error }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="id_pace_type">Pace Type:</label>
+                {{ form.pace_type }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_target_date">Target Date:</label>
+                {{ form.target_date }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_objective">Objective:</label>
+                {{ form.objective }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_goal_type">Goal Type:</label>
+                {{ form.goal_type }}
+            </div>
+
+            <div class="form-group" id="focus_area_container">
+                <label for="id_focus_area">Focus Area:</label>
+                {{ form.focus_area }}
+            </div>
+
+            <div class="form-group" id="current_amount_container">
+                <label for="id_current_amount">Current Amount:</label>
+                {{ form.current_amount }}
+            </div>
+
+            <div class="form-group" id="future_amount_container">
+                <label for="id_future_amount">Goal:</label>
+                {{ form.future_amount }}
+            </div>
+
+            <div class="form-group" id="same_value_container" style="display: none;">
+                <label for="id_same_value">Value:</label>
+                {{ form.same_value }}
+            </div>
+            
+            <button type="submit">Save</button>
+        </form>
+    </div>
+
     <script>
-        function updateFields() {
-            const objective = document.getElementById('id_objective').value;
+        // JavaScript to handle dynamic form updates
+        document.addEventListener('DOMContentLoaded', function() {
+            const objectiveField = document.getElementById('id_objective');
             const currentAmountContainer = document.getElementById('current_amount_container');
             const futureAmountContainer = document.getElementById('future_amount_container');
             const sameValueContainer = document.getElementById('same_value_container');
             
-            if (objective === 'SAME') {
+            // Update fields based on objective selection
+            objectiveField.addEventListener('change', function() {
+                if (this.value === 'SAME') {
+                    currentAmountContainer.style.display = 'none';
+                    futureAmountContainer.style.display = 'none';
+                    sameValueContainer.style.display = 'block';
+                } else {
+                    currentAmountContainer.style.display = 'block';
+                    futureAmountContainer.style.display = 'block';
+                    sameValueContainer.style.display = 'none';
+                }
+            });
+
+            // Initialize the form based on the initial objective value
+            if (objectiveField.value === 'SAME') {
                 currentAmountContainer.style.display = 'none';
                 futureAmountContainer.style.display = 'none';
                 sameValueContainer.style.display = 'block';
-            } else {
-                currentAmountContainer.style.display = 'block';
-                futureAmountContainer.style.display = 'block';
-                sameValueContainer.style.display = 'none';
             }
-        }
-
-        function updateFocusArea() {
-            const goalType = document.getElementById('id_goal_type').value;
-            const focusAreaContainer = document.getElementById('focus_area_container');
-            
-            if (goalType === 'FOOD') {
-                // Create a dropdown for food goals
-                const foodChoices = [
-                    ['CALORIES', 'Calories'],
-                    ['CARBS', 'Carbohydrates'],
-                    ['PROTEIN', 'Protein'],
-                    ['SODIUM', 'Sodium'],
-                    ['FAT', 'Fat'],
-                    ['CHOLESTOROL', 'Cholesterol']
-                ];
-                
-                let dropdownHTML = '<select id="id_focus_area" name="focus_area">';
-                foodChoices.forEach(choice => {
-                    dropdownHTML += `<option value="${choice[0]}">${choice[1]}</option>`;
-                });
-                dropdownHTML += '</select>';
-                focusAreaContainer.innerHTML = dropdownHTML;
-            } else if (goalType === 'EXERCISE') {
-                // Create a text input for exercise goals
-                focusAreaContainer.innerHTML = '<input type="text" id="id_focus_area" name="focus_area" placeholder="Enter exercise name">';
-            } else {
-                // Default to empty container
-                focusAreaContainer.innerHTML = '';
-            }
-        }
-    </script>
-</head>
-<body>
-    <h1>Log New Trajectory</h1>
-    <form method="post">
-        {% csrf_token %}
-        
-        <!-- Display form errors -->
-        {% if form.errors %}
-            <div class="error-message">
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <strong>{{ field.label }}:</strong> {{ error }}<br>
-                    {% endfor %}
-                {% endfor %}
-                {% for error in form.non_field_errors %}
-                    {{ error }}<br>
-                {% endfor %}
-            </div>
-        {% endif %}
-        
-        <label for="id_pace_type">Pace Type:</label>
-        {{ form.pace_type }}<br>
-        
-        <label for="id_target_date">Target Date:</label>
-        {{ form.target_date }}<br>
-        
-        <label for="id_objective">Objective:</label>
-        <select id="id_objective" name="objective" onchange="updateFields()">
-            <option value="">----</option>
-            <option value="INCREASE">Increase</option>
-            <option value="DECREASE">Decrease</option>
-            <option value="SAME">Same</option>
-        </select><br>
-        
-        <label for="id_goal_type">Goal Type:</label>
-        <select id="id_goal_type" name="goal_type" onchange="updateFocusArea()">
-            <option value="">----</option>
-            <option value="FOOD">Food</option>
-            <option value="EXERCISE">Exercise</option>
-        </select><br>
-        
-        <div id="focus_area_container">
-            <label for="id_focus_area">Focus Area:</label>
-            <!-- Focus area input will be populated by JavaScript -->
-        </div><br>
-
-        <div id="current_amount_container">
-            <label for="id_current_amount">Current Amount:</label>
-            {{ form.current_amount }}<br>
-            {% if form.current_amount.errors %}
-                <div class="error-message">
-                    {{ form.current_amount.errors }}
-                </div>
-            {% endif %}
-        </div>
-
-        <div id="future_amount_container">
-            <label for="id_future_amount">Goal:</label>
-            {{ form.future_amount }}<br>
-            {% if form.future_amount.errors %}
-                <div class="error-message">
-                    {{ form.future_amount.errors }}
-                </div>
-            {% endif %}
-        </div>
-
-        <div id="same_value_container" style="display: none;">
-            <label for="id_same_value">Value:</label>
-            {{ form.same_value }}<br>
-            {% if form.same_value.errors %}
-                <div class="error-message">
-                    {{ form.same_value.errors }}
-                </div>
-            {% endif %}
-        </div>
-        
-        <button type="submit">Save</button>
-    </form>
-
-    <script>
-        // Initialize the fields based on the initial objective value
-        window.onload = function() {
-            updateFields();
-        };
+        });
     </script>
 </body>
 </html>
