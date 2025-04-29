@@ -18,7 +18,6 @@ channels = "^4.2.2"
 channels-redis = "^4.2.1"
 daphne = "^4.1.2"
 numpy = "^2.2.4"
-inflect = "^7.5.0"
 
 
 [build-system]
