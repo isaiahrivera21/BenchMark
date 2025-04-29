@@ -5,36 +5,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Food Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            background-color: #1E1E1E; /* Charcoal black background */
+            color: #ffffff; /* White text */
         }
         h1, h2 {
             text-align: center;
-            color: #333;
+            color: #88FF88; /* Neon green text */
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
+            background-color: #2A2A2A; /* Dark table background */
         }
         th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #444444;
             padding: 12px;
             text-align: center;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #333333;
             font-weight: bold;
         }
         tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #222222;
         }
         .dashboard-container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
+            background-color: #2A2A2A; /* Dark container background */
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
         .button-container {
             display: flex;
@@ -43,25 +49,28 @@
             margin: 20px 0;
         }
         .add-food-btn, .set-goal-btn {
-            padding: 10px 20px;
+            padding: 12px 24px;
             text-align: center;
             text-decoration: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
         }
         .add-food-btn {
-            background-color: #4CAF50;
-            color: white;
+            background-color: #88FF88; /* Keep log button as neon green */
+            color: #1E1E1E; /* Dark text */
         }
         .add-food-btn:hover {
-            background-color: #45a049;
+            background-color: #72E372; /* Darker green on hover */
         }
         .set-goal-btn {
-            background-color: #2196F3;
-            color: white;
+            background-color: #f8f8ff; /* Creamy white color */
+            color: #1E1E1E; /* Dark text */
         }
         .set-goal-btn:hover {
-            background-color: #0b7dda;
+            background-color: #e8e8ff; /* Slightly darker creamy white on hover */
         }
         .charts-container {
             display: grid;
@@ -71,11 +80,15 @@
         }
         .chart-container {
             height: 200px;
+            background-color: #2A2A2A; /* Dark chart container background */
+            border-radius: 5px;
+            padding: 10px;
         }
         .chart-title {
             text-align: center;
             margin-bottom: 10px;
             font-weight: bold;
+            color: #88FF88; /* Neon green text */
         }
     </style>
 </head>
@@ -112,11 +125,13 @@
                                 datasets: [{
                                     label: '{{ trajectory.objective }} {{ trajectory.focus_area }}',
                                     data: data,
-                                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                    borderColor: 'rgb(75, 192, 192)',
-                                    borderWidth: 1,
-                                    tension: 0.2,
-                                    fill: true
+                                    backgroundColor: 'rgba(248, 248, 255, 0.1)', // Slightly transparent creamy white background
+                                    borderColor: '#f8f8ff', // Creamy white line color
+                                    borderWidth: 2,
+                                    pointBackgroundColor: '#88FF88', // Neon green points
+                                    pointBorderColor: '#f8f8ff', // Creamy white border for points
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
                                 }]
                             },
                             options: {
@@ -124,12 +139,28 @@
                                 maintainAspectRatio: false,
                                 scales: {
                                     y: {
-                                        beginAtZero: true
+                                        beginAtZero: true,
+                                        grid: {
+                                            color: 'rgba(255, 255, 255, 0.1)' // Light grid lines
+                                        },
+                                        ticks: {
+                                            color: '#ffffff' // White tick labels
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            color: 'rgba(255, 255, 255, 0.1)' // Light grid lines
+                                        },
+                                        ticks: {
+                                            color: '#ffffff' // White tick labels
+                                        }
                                     }
                                 },
                                 plugins: {
                                     legend: {
-                                        display: false
+                                        labels: {
+                                            color: '#ffffff' // White legend text
+                                        }
                                     }
                                 }
                             }
@@ -189,5 +220,19 @@
             <p>No monthly analytics data available.</p>
         {% endif %}
     </div>
+
+    <!-- Load Chart.js from CDN with fallback -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Fallback if CDN fails
+        window.onload = function() {
+            if (typeof Chart === 'undefined') {
+                console.error("Chart.js failed to load from CDN. Loading local fallback.");
+                const script = document.createElement('script');
+                script.src = "{% static 'js/chart.js' %}";
+                document.head.appendChild(script);
+            }
+        };
+    </script>
 </body>
 </html>

@@ -2,15 +2,81 @@
 <html>
 <head>
     <title>Delete Food</title>
+    <style>
+        body {
+            background-color: #1E1E1E; /* Charcoal black */
+            color: #ffffff; /* White text */
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #2A2A2A;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #88FF88; /* Pale neon green */
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        button[type="submit"], .cancel-link {
+            background-color: #333333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+        }
+
+        button[type="submit"] {
+            background-color: #88FF88; /* Pale neon green */
+            color: #1E1E1E;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #72E372; /* Darker green on hover */
+        }
+
+        .cancel-link {
+            background-color: #444444;
+        }
+
+        .cancel-link:hover {
+            background-color: #555555;
+        }
+    </style>
 </head>
 <body>
-    <h1>Delete Food</h1>
-    <p>Are you sure you want to delete "{{ food.food_name }}"?</p>
-    
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit">Confirm Delete</button>
-        <a href="{% url 'index' %}">Cancel</a> 
-    </form>
+    <div class="container">
+        <h1>Delete Food</h1>
+        <p>Are you sure you want to delete "{{ food.food_name }}"?</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Confirm Delete</button>
+            <a href="{% url 'index' %}" class="cancel-link">Cancel</a>
+        </form>
+    </div>
 </body>
 </html>
