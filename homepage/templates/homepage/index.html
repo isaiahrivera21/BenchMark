@@ -3,13 +3,78 @@
 <html>
 <head>
     <title>Homepage</title>
+    <style>
+        body {
+            background-color: #1E1E1E; /* Charcoal black */
+            color: #ffffff; /* White text */
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #2A2A2A;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: #88FF88; /* Pale neon green */
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center buttons horizontally */
+            gap: 15px;
+        }
+
+        .btn {
+            background-color: #88FF88; /* Pale neon green */
+            color: #1E1E1E; /* Dark text */
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px; /* Add padding for better button size */
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background-color: #72E372; /* Darker green on hover */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+                margin: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to My BenchMark!</h1>
-    
-    <div>
-        <a href="{% url 'exercise_homepage' %}">Log Exercise</a>
-        <a href="{% url 'food_homepage' %}">Log Food</a>
+    <div class="container">
+        <h1>Welcome to My BenchMark!</h1>
+        
+        <div class="nav-links">
+            <a href="{% url 'exercise_homepage' %}" class="btn">Log Exercise</a>
+            <a href="{% url 'food_homepage' %}" class="btn">Log Food</a>
+        </div>
     </div>
 </body>
 </html>
