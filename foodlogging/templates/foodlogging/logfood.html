@@ -35,17 +35,31 @@
             gap: 15px;
         }
 
-        input[type="text"] {
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            color: #88FF88;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
             background-color: #333333;
             border: none;
             border-radius: 5px;
-            padding: 12px;
+            padding: 10px;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
-        input[type="text"]:focus {
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
             outline: none;
             box-shadow: 0 0 10px rgba(136, 255, 136, 0.5); /* Green glow */
         }
@@ -66,16 +80,151 @@
         button[type="submit"]:hover {
             background-color: #72E372; /* Darker green on hover */
         }
+
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #333333;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .autocomplete-items div:hover {
+            background-color: #444444;
+        }
+
+        .errorlist {
+            color: red;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Log Food</h1>
-        <form method="post">
+        <form id="food-form" method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+            {{ form.non_field_errors }}
+            <div class="form-group">
+                <label for="food-input">Food name:</label>
+                <input type="text" id="food-input" name="food_name" placeholder="Type a food..." style="margin-top: 5px;">
+                <div id="food-autocomplete" style="position: relative;"></div>
+                {{ form.food_name.errors }}
+            </div>
+            <div class="form-group">
+                <label for="meal-type">Meal type:</label>
+                <select id="meal-type" name="meal_type">
+                    <option value="">----------</option>
+                    <option value="BREAKFAST">Breakfast</option>
+                    <option value="LUNCH">Lunch</option>
+                    <option value="DINNER">Dinner</option>
+                    <option value="SNACK">Snack</option>
+                </select>
+                {{ form.meal_type.errors }}
+            </div>
+            <div class="form-group">
+                <label for="serving-size">Serving size:</label>
+                <input type="number" id="serving-size" name="serving_size" step="0.1">
+                {{ form.serving_size.errors }}
+            </div>
+            <div class="form-group">
+                <label for="calories">Calories:</label>
+                <input type="number" id="calories" name="calories">
+                {{ form.calories.errors }}
+            </div>
+            <div class="form-group">
+                <label for="fat">Fat:</label>
+                <input type="number" id="fat" name="fat">
+                {{ form.fat.errors }}
+            </div>
+            <div class="form-group">
+                <label for="carbohydrates">Carbohydrates:</label>
+                <input type="number" id="carbohydrates" name="carbohydrates">
+                {{ form.carbohydrates.errors }}
+            </div>
+            <div class="form-group">
+                <label for="protein">Protein:</label>
+                <input type="number" id="protein" name="protein">
+                {{ form.protein.errors }}
+            </div>
+            <div class="form-group">
+                <label for="cholesterol">Cholesterol:</label>
+                <input type="number" id="cholesterol" name="cholesterol">
+                {{ form.cholesterol.errors }}
+            </div>
+            <div class="form-group">
+                <label for="sodium">Sodium:</label>
+                <input type="number" id="sodium" name="sodium">
+                {{ form.sodium.errors }}
+            </div>
+            <div class="form-group">
+                <label for="sugar">Sugar:</label>
+                <input type="number" id="sugar" name="sugar">
+                {{ form.sugar.errors }}
+            </div>
             <button type="submit">Submit</button>
         </form>
     </div>
+
+    <script>
+        function autocomplete(input, autocompleteDiv) {
+            input.addEventListener('input', function () {
+                const query = this.value;
+                if (query.length < 2) {
+                    autocompleteDiv.innerHTML = '';
+                    return;
+                }
+
+                fetch(`/foodlogging/food-autocomplete/?query=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        autocompleteDiv.innerHTML = '';
+                        const results = data.results;
+
+                        if (results.length === 0) {
+                            autocompleteDiv.innerHTML = '<div style="padding: 10px; color: white;">No results found</div>';
+                            return;
+                        }
+
+                        results.forEach(item => {
+                            const div = document.createElement('div');
+                            div.textContent = item.name;
+                            div.addEventListener('click', function () {
+                                input.value = item.name;
+                                document.getElementById('calories').value = item.calories;
+                                document.getElementById('fat').value = item.fat;
+                                document.getElementById('carbohydrates').value = item.carbohydrates;
+                                document.getElementById('protien').value = item.protein;
+                                document.getElementById('cholestorol').value = item.cholesterol;
+                                document.getElementById('sodium').value = item.sodium;
+                                document.getElementById('sugar').value = item.sugar;
+                                autocompleteDiv.innerHTML = '';
+                            });
+                            autocompleteDiv.appendChild(div);
+                        });
+                    });
+            });
+
+            input.addEventListener('focus', function () {
+                this.dispatchEvent(new Event('input'));
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            autocomplete(document.getElementById('food-input'), document.getElementById('food-autocomplete'));
+        });
+    </script>
 </body>
 </html>

@@ -34,6 +34,7 @@ def create_average_macro_metric(user, foods, time_range):
         avg_protien=Avg('protien'),
         avg_cholesterol=Avg('cholestorol'),
         avg_sodium=Avg('sodium'),
+        avg_sugar=Avg('sugar')
     )
 
     Analytics.objects.create(
@@ -134,6 +135,7 @@ def generate_average_macro_consumption(sender, instance, created, **kwargs):
             "average_protien": all_time_averages['avg_protien'],
             "average_cholesterol": all_time_averages['avg_cholesterol'],
             "average_sodium": all_time_averages['avg_sodium'],
+            "average_sugar": all_time_averages['avg_sugar'],
         }
 
         weekly_food_data = {
@@ -143,6 +145,7 @@ def generate_average_macro_consumption(sender, instance, created, **kwargs):
             "average_protien": weekly_averages['avg_protien'],
             "average_cholesterol": weekly_averages['avg_cholesterol'],
             "average_sodium": weekly_averages['avg_sodium'],
+            "average_sugar": weekly_averages['avg_sugar'],
         }
 
         monthly_food_data = {
@@ -152,6 +155,7 @@ def generate_average_macro_consumption(sender, instance, created, **kwargs):
             "average_protien": monthly_averages['avg_protien'],
             "average_cholesterol": monthly_averages['avg_cholesterol'],
             "average_sodium": monthly_averages['avg_sodium'],
+            "average_sugar": monthly_averages['avg_sugar'],
         }
 
         channel_layer = get_channel_layer()

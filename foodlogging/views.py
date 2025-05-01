@@ -9,11 +9,32 @@ from django.contrib.auth.decorators import login_required
 from analytics.models import Analytics
 from trajectories.models import Trajectory
 import json
+from django.http import JsonResponse
+from foodrepo.models import FoodEntry
+
 
 # NOTE: Edit the templates to work for food. 
 
 def index(request):
     return HttpResponse("Hello, world. You're at the food_logging index.")
+
+def food_autocomplete(request):
+    query = request.GET.get('query', '')
+    results = []
+    if query:
+        food_entries = FoodEntry.objects.filter(food_name__startswith=query)[:10]
+        results = [{
+            'id': entry.id,
+            'name': entry.food_name,
+            'calories': entry.calories,
+            'fat': entry.fat,
+            'carbohydrates': entry.carbohydrates,
+            'protein': entry.protein,
+            'cholesterol': entry.cholesterol,
+            'sodium': entry.sodium,
+            'sugar' : entry.sugar,
+        } for entry in food_entries]
+    return JsonResponse({'results': results})
 
 @login_required
 def food_homepage(request):
@@ -55,22 +76,38 @@ def food_homepage(request):
 
     return render(request, 'foodlogging/food_homepage.html', context)
 
+# @login_required
+# def log_food(request):
+#     # pretty sure I define the functionality here
+
+#     if request.method == 'POST':
+#         form = UserLoggedFoodForm(request.POST) # create form instance
+
+#         # check if valid
+#         if form.is_valid():
+#             user_logged_food = form.save(commit=False)
+#             user_logged_food.user = request.user
+#             user_logged_food.save()
+#             return redirect('/foodlogging/create')
+#     else:
+#         form = UserLoggedFoodForm()
+#         return render(request,"foodlogging/logfood.html", {"form": form})
+
 @login_required
 def log_food(request):
-    # pretty sure I define the functionality here
-
     if request.method == 'POST':
-        form = UserLoggedFoodForm(request.POST) # create form instance
-
-        # check if valid
+        form = UserLoggedFoodForm(request.POST)
         if form.is_valid():
             user_logged_food = form.save(commit=False)
             user_logged_food.user = request.user
             user_logged_food.save()
-            return redirect('/foodlogging/create')
+            return redirect('/food')  # Replace with your actual success URL
+        else:
+            # Return the form with errors
+            return render(request, 'foodlogging/logfood.html', {'form': form})
     else:
         form = UserLoggedFoodForm()
-        return render(request,"foodlogging/logfood.html", {"form": form})
+        return render(request, 'foodlogging/logfood.html', {'form': form})
 
 @login_required
 def edit_food(request,id):
@@ -81,7 +118,7 @@ def edit_food(request,id):
         form = UserLoggedFoodForm(request.POST,instance=food)
         if form.is_valid():
             form.save()
-            return redirect('/foodlogging/create')
+            return redirect('/food')
     else:
         form = UserLoggedFoodForm(instance=food)
 
@@ -103,3 +140,6 @@ def delete_food(request,id):
 def list_all_food(request):
     foods = UserLoggedFood.objects.filter(user=request.user)
     return render(request, 'foodlogging/list_all_food.html', {'foods': foods}) 
+
+
+# TODO: we are close with autoful just have to make sure after you click the entry you want the right details get filled in 

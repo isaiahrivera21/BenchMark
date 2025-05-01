@@ -27,6 +27,8 @@ class UserLoggedFood(models.Model):
     protien = models.IntegerField(null=True, blank=True)
     cholestorol = models.IntegerField(null=True, blank=True)
     sodium = models.IntegerField(null=True, blank=True)
+    sugar = models.IntegerField(null=True, blank=True)
+    
     user =  models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=True, blank=True)
 
     def __str__(self):

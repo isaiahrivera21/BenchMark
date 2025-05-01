@@ -9,7 +9,7 @@ class FoodEntry(models.Model):
     protein = models.IntegerField(null=True, blank=True)
     cholesterol = models.IntegerField(null=True, blank=True)
     sodium = models.IntegerField(null=True, blank=True)
-    sugars = models.IntegerField(null=True, blank=True)
+    sugar = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.food_name}"
