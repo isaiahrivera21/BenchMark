@@ -9,5 +9,6 @@ urlpatterns = [
     path("edit/<int:id>/", views.edit_exercise, name="edit_exercise"),
     path('exercises/', views.list_all_exercise, name='list_all_exercise'),
     path('exercise_homepage/', views.exercise_homepage, name='exercise_homepage'),
-    path('exercise_homepage/<str:exercise_name>/', views.exercise_detail, name='exercise_detail')
+    path('exercise_homepage/<str:exercise_name>/', views.exercise_detail, name='exercise_detail'),
+    path('exercise-autocomplete/', views.exercise_autocomplete, name='exercise-autocomplete')
 ]

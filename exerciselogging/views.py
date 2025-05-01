@@ -12,6 +12,13 @@ from django.urls import reverse
 import json
 from trajectories.models import Trajectory
 from analytics.models import Analytics
+from django.http import JsonResponse
+from exerciserepo.models import ExerciseEntry
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from exerciselogging.models import UserLoggedExercise
+from analytics.models import Analytics
+
 
 def normalize_exercise_name(name):
     # Convert to lowercase
@@ -30,6 +37,17 @@ def normalize_exercise_name(name):
 
 def index(request):
     return HttpResponse("Hello, world. You're at the exercise_logging index.")
+
+def exercise_autocomplete(request):
+    query = request.GET.get('query', '')
+    results = []
+    if query:
+        exercise_entries = ExerciseEntry.objects.filter(exercise_name__startswith=query)[:10]
+        results = [{
+            'name': entry.exercise_name,
+            'target_muscles': entry.target_muscles,
+        } for entry in exercise_entries]
+    return JsonResponse({'results': results})
 
 
 @login_required
@@ -56,11 +74,6 @@ def exercise_homepage(request):
     }
     
     return render(request, 'exerciselogging/exercise_homepage.html', context)
-
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from exerciselogging.models import UserLoggedExercise
-from analytics.models import Analytics
 
 @login_required
 def exercise_detail(request, exercise_name):
@@ -111,6 +124,11 @@ def log_exercise(request):
             user_logged_exercise.exercise_name = normalize_exercise_name(user_logged_exercise.exercise_name)
             user_logged_exercise.save()
             return redirect(reverse('exercise_detail', kwargs={'exercise_name': user_logged_exercise.exercise_name}))
+        else:
+            # Print validation errors to the console/server log
+            print(form.errors)
+            # Return the form with errors
+            return render(request, 'exerciselogging/logexercise.html', {'form': form})
     
     else:
         # Check if exercise_name is provided in the URL parameters
@@ -129,7 +147,7 @@ def edit_exercise(request,id):
         form = UserLoggedExerciseForm(request.POST,instance=exercise)
         if form.is_valid():
             form.save()
-            return redirect('/exerciselogging/create')
+            return redirect('/exercise')
     else:
         form = UserLoggedExerciseForm(instance=exercise)
 
