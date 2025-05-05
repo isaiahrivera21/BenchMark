@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Homepage</title>
+    <title>Log Steps</title>
     <style>
         body {
             background-color: #1E1E1E; /* Charcoal black */
@@ -29,48 +29,41 @@
             text-align: center;
         }
 
-        .nav-links {
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* Center buttons horizontally */
-            gap: 15px;
+        .form-group {
+            margin-bottom: 20px;
         }
 
-        /* Green buttons */
-        .btn-green {
-            background-color: #88FF88; /* Pale neon green */
-            color: #1E1E1E; /* Dark text */
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #333333;
             border: none;
             border-radius: 5px;
-            padding: 12px 20px; /* Add padding for better button size */
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            text-align: center;
-            text-decoration: none;
+            color: white;
         }
 
-        .btn-green:hover {
-            background-color: #72E372; /* Darker green on hover */
-        }
-
-        /* Creamy white buttons */
-        .btn-cream {
+        .btn {
             background-color: #FFFAF0; /* Creamy white */
             color: #1E1E1E; /* Dark text */
             border: 1px solid #888888; /* Subtle border */
             border-radius: 5px;
-            padding: 12px 20px; /* Add padding for better button size */
+            padding: 12px 20px;
             font-size: 16px;
             cursor: pointer;
             transition: all 0.3s;
-            text-align: center;
-            text-decoration: none;
+            display: block;
+            width: 100%;
+            margin-top: 10px;
         }
 
-        .btn-cream:hover {
+        .btn:hover {
             background-color: #F5F5DC; /* Slightly darker creamy white on hover */
-            transform: translateY(-2px); /* Subtle lift effect */
+            transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
@@ -89,14 +82,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to My BenchMark!</h1>
-        
-        <div class="nav-links">
-            <a href="{% url 'exercise_homepage' %}" class="btn-green">Log Exercise</a>
-            <a href="{% url 'food_homepage' %}" class="btn-green">Log Food</a>
-            <a href="{% url 'log_weight' %}" class="btn-cream">Log Weight</a>
-            <a href="{% url 'log_steps' %}" class="btn-cream">Log Steps</a>
-        </div>
+        <h1>Log Steps</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_steps">Steps:</label>
+                <input type="number" name="steps" required>
+            </div>
+            <button type="submit" class="btn">Log Steps</button>
+        </form>
     </div>
 </body>
 </html>

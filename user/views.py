@@ -20,6 +20,9 @@ def create_user(request):
             user = form.save()
             login(request, user)
             return redirect('index')
+        else:
+            # Print validation errors to the console/server log
+            print(form.errors)
     else:
         form = CustomUserCreationForm()
     return render(request, 'user/create_user.html', {'form': form})

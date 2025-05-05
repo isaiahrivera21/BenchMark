@@ -77,31 +77,110 @@ def generate_trajectory_data(sender, instance, created, **kwargs):
 @receiver(post_save, sender=UserLoggedExercise)
 def update_exercise_tracking(sender, instance, created, **kwargs):
     if created and instance.user:
+        logged_date = instance.exercise_logged_at.date()
         
-        # we have to querey for all trajectories associated with the thing we are trying to update (aka need to querey for focus area).
-        # for exercises we need to querey for the specific name of that exercise. 
+        # Query all active exercise trajectories covering the logged date
+        active_trajectories = Trajectory.objects.filter(
+            user=instance.user,
+            goal_type='EXERCISE',
+            focus_area=instance.exercise_name
+        )
 
+        for trajectory in active_trajectories:
+            # Get the most recent volume for this exercise from analytics
+            latest_volume = Analytics.objects.filter(
+                user=instance.user,
+                metric_name='Volume',
+                item_name=instance.exercise_name
+            ).order_by('-id').first()
 
-        # we need some logic here to check if we get a hit or not. If we don't just pass or exit
+            A = latest_volume.value if latest_volume else 0
+            B = trajectory.future_amount
+            interval_type = trajectory.objective
 
-        # if we do hit we need to acess the weight sets or reps???? or do we acess something from analytics. For exercise its not specifically clear what they want to increase.
-        # given that we only have one int for each I think for exercises we should just do trajectories based on volume. For expected we can have something that makes 
-        # a change in the box to sets reps and weight BUT in the backend its gonna multiply out to be volume.
+            total_days = (trajectory.target_date - logged_date).days
 
-        # then for exercises with no weights we can measure just in reps and make sure to set weight and sets to 1. 
-        pass
-        
+            if trajectory.pace_type == 'DAILY':
+                total_intervals = total_days
+            elif trajectory.pace_type == 'WEEKLY':
+                total_intervals = total_days // 7
+            elif trajectory.pace_type == 'MONTHLY':
+                total_intervals = total_days // 30
+
+            # Generate trajectory points
+            generated_points = generate_trajectory(A, B, total_intervals, interval_type)
+
+            # Update trajectory with new points
+            trajectory.actual_points = generated_points
+            trajectory.save()
 
 
 @receiver(post_save, sender=UserLoggedFood)
 def update_food_tracking(sender, instance, created, **kwargs):
     if created and instance.user:
-        # we have to querey for all trajectories associated with the thing we are trying to update (aka need to querey for focus area).
-        # for food we specifically need to querey just to see if any of the macros listed have trajectories associated with them.
+        logged_date = instance.food_logged_at.date()
         
+        # Query all active food trajectories covering the logged date
+        active_trajectories = Trajectory.objects.filter(
+            user=instance.user,
+            goal_type='FOOD',
+            start_date__lte=logged_date,
+            target_date__gte=logged_date
+        )
 
-        # we need some logic here to check if we get a hit or not. If we don't just pass or exit
+        for trajectory in active_trajectories:
+            # Map focus area to corresponding food field
+            focus_field_map = {
+                'CALORIES': 'calories',
+                'FAT': 'fat',
+                'CARBOHYDRATES': 'carbohydrates',
+                'PROTEIN': 'proten',
+                'CHOLESTEROL': 'cholesterol',
+                'SODIUM': 'sodium',
+                'SUGAR': 'sugar'
+            }
+            
+            field_name = focus_field_map.get(trajectory.focus_area)
+            
+            if field_name:
+                # Get nutritional value from the logged food
+                value = getattr(instance, field_name, 0)
+                
+                # Calculate intervals based on trajectory's pace_type
+                total_days = (trajectory.target_date - logged_date).days
+                
+                if trajectory.pace_type == 'DAILY':
+                    total_intervals = total_days
+                elif trajectory.pace_type == 'WEEKLY':
+                    total_intervals = total_days // 7
+                elif trajectory.pace_type == 'MONTHLY':
+                    total_intervals = total_days // 30
+                
+                # Generate trajectory points
+                if trajectory.objective == 'INCREASE':
+                    generated_points = generate_trajectory(
+                        value,
+                        trajectory.future_amount,
+                        total_intervals,
+                        'INCREASE'
+                    )
+                elif trajectory.objective == 'DECREASE':
+                    generated_points = generate_trajectory(
+                        value,
+                        trajectory.future_amount,
+                        total_intervals,
+                        'DECREASE'
+                    )
+                else:  # SAME
+                    generated_points = generate_trajectory(
+                        value,
+                        value,
+                        total_intervals,
+                        'SAME'
+                    )
+                
+                # Update trajectory with new points
+                trajectory.actual_points = generated_points
+                trajectory.save()
 
-        # if we do have hit then we want to redo the total days calculation and send in a new starting point (wait I think I need to have something that records the total macros the user is consuming per day)
-        # then the logic should change to whenever that specific thing changes instead of each logged food. 
-        pass
+                # NOTE: the point where pulling from might need to be from analytics and not the actual value directly logged. 

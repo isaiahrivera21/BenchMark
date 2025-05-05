@@ -36,16 +36,29 @@ def food_autocomplete(request):
         } for entry in food_entries]
     return JsonResponse({'results': results})
 
+
+from datetime import datetime, timedelta
+import json
+
 @login_required
 def food_homepage(request):
-    # Fetch the latest daily and monthly analytics based on highest ID
     try:
-        latest_daily = Analytics.objects.filter(
+        daily_calories = Analytics.objects.filter(
             user=request.user,
-            period_type='Daily'
+            period_type='Daily',
+            metric_name='daily_calories_consumed'
         ).latest('id')
     except Analytics.DoesNotExist:
-        latest_daily = None
+        daily_calories = None
+
+    try:
+        calorie_balance = Analytics.objects.filter(
+            user=request.user,
+            period_type='Daily',
+            metric_name='calorie_balance'
+        ).latest('id')
+    except Analytics.DoesNotExist:
+        calorie_balance = None
 
     try:
         latest_monthly = Analytics.objects.filter(
@@ -55,43 +68,138 @@ def food_homepage(request):
     except Analytics.DoesNotExist:
         latest_monthly = None
 
-    # Fetch all food-related trajectories
     food_trajectories = Trajectory.objects.filter(
         user=request.user,
         goal_type='FOOD'
     )
 
-    # Prepare data for each trajectory
     for trajectory in food_trajectories:
-        # Convert timestamps to string format
         trajectory.labels = json.dumps([point.strftime('%Y-%m-%d') for point in trajectory.timestamps])
-        # Convert projected points to a serializable format
         trajectory.data = json.dumps(trajectory.projected_points)
 
+    # # Prepare data for calendar heatmap using UserLoggedFood
+    # today = datetime.today()
+    # first_day_of_month = today.replace(day=1)
+    # weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+    # daily_calorie_data = []
+    # current_date = first_day_of_month
+    # while current_date <= today:
+    #     # Calculate total calories for the day from UserLoggedFood
+    #     daily_logs = UserLoggedFood.objects.filter(
+    #         user=request.user,
+    #         food_logged_at__date=current_date
+    #     )
+    #     total_calories = sum(log.calories for log in daily_logs)
+
+    #     color = "#4CAF50" if total_calories < 1500 else "#FFC107" if total_calories < 2500 else "#F44336"
+    #     daily_calorie_data.append({
+    #         'date': current_date.strftime('%Y-%m-%d'),
+    #         'day': current_date.day,
+    #         'calories': total_calories,
+    #         'color': color
+    #     })
+    #     current_date += timedelta(days=1)
+
+    # context = {
+    #     'daily_calories': daily_calories,
+    #     'calorie_balance': calorie_balance,
+    #     'latest_monthly': latest_monthly,
+    #     'food_trajectories': food_trajectories,
+    #     'daily_calorie_data': daily_calorie_data,
+    #     'weekdays': weekdays
+    # }
+
+    # return render(request, 'foodlogging/food_homepage.html', context)
+
+from datetime import datetime, timedelta
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+import json
+from calendar import monthrange
+
+@login_required
+def food_homepage(request):
+    try:
+        daily_calories = Analytics.objects.filter(
+            user=request.user,
+            period_type='Daily',
+            metric_name='daily_calories_consumed'
+        ).latest('id')
+    except Analytics.DoesNotExist:
+        daily_calories = None
+
+    try:
+        calorie_balance = Analytics.objects.filter(
+            user=request.user,
+            period_type='Daily',
+            metric_name='calorie_balance'
+        ).latest('id')
+    except Analytics.DoesNotExist:
+        calorie_balance = None
+
+    try:
+        latest_monthly = Analytics.objects.filter(
+            user=request.user,
+            period_type='Monthly'
+        ).latest('id')
+    except Analytics.DoesNotExist:
+        latest_monthly = None
+
+    food_trajectories = Trajectory.objects.filter(
+        user=request.user,
+        goal_type='FOOD'
+    )
+
+    for trajectory in food_trajectories:
+        trajectory.labels = json.dumps([point.strftime('%Y-%m-%d') for point in trajectory.timestamps])
+        trajectory.data = json.dumps(trajectory.projected_points)
+
+    # Prepare data for calendar heatmap using UserLoggedFood
+    today = datetime.today()
+    first_day_of_month = today.replace(day=1)
+    weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+    daily_calorie_data = []
+    current_date = first_day_of_month
+    while current_date <= today:
+        # Calculate total calories for the day from UserLoggedFood
+        daily_logs = UserLoggedFood.objects.filter(
+            user=request.user,
+            food_logged_at__date=current_date
+        )
+        total_calories = sum(log.calories for log in daily_logs)
+
+        color = "#4CAF50" if total_calories < 1500 else "#FFC107" if total_calories < 2500 else "#F44336"
+        daily_calorie_data.append({
+            'date': current_date.strftime('%Y-%m-%d'),
+            'day': current_date.day,
+            'calories': total_calories,
+            'color': color
+        })
+        current_date += timedelta(days=1)
+
+    # Prepare data for daily and monthly bar charts
+    daily_chart_data = {
+        'labels': [day['date'] for day in daily_calorie_data],
+        'data': [day['calories'] for day in daily_calorie_data]
+    }
+
+    # Calculate monthly total
+    monthly_total = sum(day['calories'] for day in daily_calorie_data)
+
     context = {
-        'latest_daily': latest_daily,
+        'daily_calories': daily_calories,
+        'calorie_balance': calorie_balance,
         'latest_monthly': latest_monthly,
         'food_trajectories': food_trajectories,
+        'daily_calorie_data': daily_calorie_data,
+        'weekdays': weekdays,
+        'daily_chart_data': json.dumps(daily_chart_data),
+        'monthly_total': monthly_total
     }
 
     return render(request, 'foodlogging/food_homepage.html', context)
-
-# @login_required
-# def log_food(request):
-#     # pretty sure I define the functionality here
-
-#     if request.method == 'POST':
-#         form = UserLoggedFoodForm(request.POST) # create form instance
-
-#         # check if valid
-#         if form.is_valid():
-#             user_logged_food = form.save(commit=False)
-#             user_logged_food.user = request.user
-#             user_logged_food.save()
-#             return redirect('/foodlogging/create')
-#     else:
-#         form = UserLoggedFoodForm()
-#         return render(request,"foodlogging/logfood.html", {"form": form})
 
 @login_required
 def log_food(request):

@@ -1,4 +1,3 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +6,8 @@
     <title>Log New Trajectory</title>
     <style>
         body {
-            background-color: #1E1E1E; /* Charcoal black background */
-            color: #ffffff; /* White text */
+            background-color: #1E1E1E;
+            color: #ffffff;
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
@@ -28,7 +27,7 @@
 
         h1 {
             text-align: center;
-            color: #88FF88; /* Neon green text */
+            color: #88FF88;
             margin-bottom: 25px;
         }
 
@@ -55,14 +54,9 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
         }
 
-        select:focus, input[type="text"]:focus, input[type="date"]:focus, input[type="number"]:focus {
-            outline: none;
-            box-shadow: 0 0 10px rgba(136, 255, 136, 0.5); /* Green glow */
-        }
-
         button[type="submit"] {
-            background-color: #88FF88; /* Neon green */
-            color: #1E1E1E; /* Dark text */
+            background-color: #88FF88;
+            color: #1E1E1E;
             border: none;
             border-radius: 5px;
             padding: 12px;
@@ -73,39 +67,25 @@
             width: 100%;
         }
 
-        button[type="submit"]:hover {
-            background-color: #72E372; /* Darker green */
+        .hidden {
+            display: none;
         }
 
         .error-message {
-            color: #ff3333; /* Red text for errors */
+            color: red;
             font-size: 0.9em;
-            margin-top: 5px;
-        }
-
-        /* Add margin bottom to form elements */
-        #focus_area_container,
-        #current_amount_container,
-        #future_amount_container,
-        #same_value_container {
-            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Log New Trajectory</h1>
-        <form method="post">
+        <form method="post" action="{% url 'create_trajectory' %}" id="trajectoryForm">
             {% csrf_token %}
             
             <!-- Display form errors -->
-            {% if form.errors %}
+            {% if form.non_field_errors %}
                 <div class="error-message">
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <strong>{{ field.label }}:</strong> {{ error }}<br>
-                        {% endfor %}
-                    {% endfor %}
                     {% for error in form.non_field_errors %}
                         {{ error }}<br>
                     {% endfor %}
@@ -115,41 +95,99 @@
             <div class="form-group">
                 <label for="id_pace_type">Pace Type:</label>
                 {{ form.pace_type }}
+                {% for error in form.pace_type.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
             </div>
 
             <div class="form-group">
                 <label for="id_target_date">Target Date:</label>
-                {{ form.target_date }}
+                <input type="date" id="id_target_date" name="target_date">
+                {% for error in form.target_date.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
             </div>
 
             <div class="form-group">
                 <label for="id_objective">Objective:</label>
                 {{ form.objective }}
+                {% for error in form.objective.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
             </div>
 
             <div class="form-group">
                 <label for="id_goal_type">Goal Type:</label>
                 {{ form.goal_type }}
+                {% for error in form.goal_type.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
             </div>
 
-            <div class="form-group" id="focus_area_container">
+            <div class="form-group hidden" id="focus_area_container">
                 <label for="id_focus_area">Focus Area:</label>
                 {{ form.focus_area }}
+                {% for error in form.focus_area.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
             </div>
 
-            <div class="form-group" id="current_amount_container">
+            <div class="form-group hidden" id="exercise_details_container">
+                <div id="current_exercise_container">
+                    <label>Current Exercise Details:</label>
+                    <div class="form-group">
+                        <label for="id_current_sets">Sets:</label>
+                        <input type="number" id="id_current_sets" name="current_sets" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_current_reps">Reps:</label>
+                        <input type="number" id="id_current_reps" name="current_reps" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_current_weight">Weight:</label>
+                        <input type="number" id="id_current_weight" name="current_weight" min="0">
+                    </div>
+                </div>
+                
+                <div id="goal_exercise_container">
+                    <label>Goal Exercise Details:</label>
+                    <div class="form-group">
+                        <label for="id_goal_sets">Sets:</label>
+                        <input type="number" id="id_goal_sets" name="goal_sets" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_goal_reps">Reps:</label>
+                        <input type="number" id="id_goal_reps" name="goal_reps" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="id_goal_weight">Weight:</label>
+                        <input type="number" id="id_goal_weight" name="goal_weight" min="0">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group hidden" id="current_amount_container">
                 <label for="id_current_amount">Current Amount:</label>
                 {{ form.current_amount }}
+                {% for error in form.current_amount.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
             </div>
 
-            <div class="form-group" id="future_amount_container">
+            <div class="form-group hidden" id="future_amount_container">
                 <label for="id_future_amount">Goal:</label>
                 {{ form.future_amount }}
+                {% for error in form.future_amount.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
             </div>
 
-            <div class="form-group" id="same_value_container" style="display: none;">
+            <div class="form-group hidden" id="same_value_container">
                 <label for="id_same_value">Value:</label>
                 {{ form.same_value }}
+                {% for error in form.same_value.errors %}
+                    <div class="error-message">{{ error }}</div>
+                {% endfor %}
             </div>
             
             <button type="submit">Save</button>
@@ -157,32 +195,117 @@
     </div>
 
     <script>
-        // JavaScript to handle dynamic form updates
         document.addEventListener('DOMContentLoaded', function() {
-            const objectiveField = document.getElementById('id_objective');
+            const goalTypeField = document.getElementById('id_goal_type');
+            const focusAreaContainer = document.getElementById('focus_area_container');
+            const exerciseDetailsContainer = document.getElementById('exercise_details_container');
             const currentAmountContainer = document.getElementById('current_amount_container');
             const futureAmountContainer = document.getElementById('future_amount_container');
             const sameValueContainer = document.getElementById('same_value_container');
+            const objectiveField = document.getElementById('id_objective');
+            const currentSetsInput = document.getElementById('id_current_sets');
+            const currentRepsInput = document.getElementById('id_current_reps');
+            const currentWeightInput = document.getElementById('id_current_weight');
+            const goalSetsInput = document.getElementById('id_goal_sets');
+            const goalRepsInput = document.getElementById('id_goal_reps');
+            const goalWeightInput = document.getElementById('id_goal_weight');
             
-            // Update fields based on objective selection
-            objectiveField.addEventListener('change', function() {
-                if (this.value === 'SAME') {
-                    currentAmountContainer.style.display = 'none';
-                    futureAmountContainer.style.display = 'none';
-                    sameValueContainer.style.display = 'block';
+            // Function to update form based on goal type selection
+            function updateFormBasedOnGoalType() {
+                if (goalTypeField.value === 'FOOD') {
+                    focusAreaContainer.classList.remove('hidden');
+                    exerciseDetailsContainer.classList.add('hidden');
+                    currentAmountContainer.classList.remove('hidden');
+                    futureAmountContainer.classList.remove('hidden');
+                    sameValueContainer.classList.add('hidden');
+                    
+                    // Create focus area dropdown for food goals
+                    const foodChoices = [
+                        ['CALORIES', 'Calories'],
+                        ['FAT', 'Fat'],
+                        ['CARBOHYDRATES', 'Carbohydrates'],
+                        ['PROTEIN', 'Protein'],
+                        ['CHOLESTEROL', 'Cholesterol'],
+                        ['SODIUM', 'Sodium'],
+                        ['SUGAR', 'Sugar']
+                    ];
+                    
+                    let dropdownHTML = '<select id="id_focus_area" name="focus_area">';
+                    dropdownHTML += '<option value="">Select a focus area</option>';
+                    foodChoices.forEach(choice => {
+                        dropdownHTML += `<option value="${choice[0]}">${choice[1]}</option>`;
+                    });
+                    dropdownHTML += '</select>';
+                    focusAreaContainer.innerHTML = dropdownHTML;
+                } else if (goalTypeField.value === 'EXERCISE') {
+                    focusAreaContainer.classList.remove('hidden');
+                    exerciseDetailsContainer.classList.remove('hidden');
+                    currentAmountContainer.classList.add('hidden');
+                    futureAmountContainer.classList.add('hidden');
+                    sameValueContainer.classList.add('hidden');
+                    
+                    // Create text input for exercise name as focus area
+                    const textInputHTML = '<input type="text" id="id_focus_area" name="focus_area" placeholder="Enter exercise name">';
+                    focusAreaContainer.innerHTML = textInputHTML;
+                    
+                    // Update hidden volume fields
+                    updateCurrentVolume();
+                    updateGoalVolume();
                 } else {
-                    currentAmountContainer.style.display = 'block';
-                    futureAmountContainer.style.display = 'block';
-                    sameValueContainer.style.display = 'none';
+                    focusAreaContainer.classList.add('hidden');
+                    exerciseDetailsContainer.classList.add('hidden');
+                    currentAmountContainer.classList.add('hidden');
+                    futureAmountContainer.classList.add('hidden');
+                    sameValueContainer.classList.add('hidden');
                 }
-            });
-
-            // Initialize the form based on the initial objective value
-            if (objectiveField.value === 'SAME') {
-                currentAmountContainer.style.display = 'none';
-                futureAmountContainer.style.display = 'none';
-                sameValueContainer.style.display = 'block';
+                
+                // Update form based on objective
+                updateFormBasedOnObjective();
             }
+            
+            // Function to calculate and update current volume
+            function updateCurrentVolume() {
+                const sets = parseInt(currentSetsInput.value) || 0;
+                const reps = parseInt(currentRepsInput.value) || 0;
+                const weight = parseInt(currentWeightInput.value) || 0;
+                const volume = sets * reps * weight;
+                document.getElementById('id_current_amount').value = volume;
+            }
+            
+            // Function to calculate and update goal volume
+            function updateGoalVolume() {
+                const sets = parseInt(goalSetsInput.value) || 0;
+                const reps = parseInt(goalRepsInput.value) || 0;
+                const weight = parseInt(goalWeightInput.value) || 0;
+                const volume = sets * reps * weight;
+                document.getElementById('id_future_amount').value = volume;
+            }
+            
+            // Function to update form based on objective selection
+            function updateFormBasedOnObjective() {
+                if (objectiveField.value === 'SAME') {
+                    currentAmountContainer.classList.add('hidden');
+                    futureAmountContainer.classList.add('hidden');
+                    sameValueContainer.classList.remove('hidden');
+                } else {
+                    currentAmountContainer.classList.remove('hidden');
+                    futureAmountContainer.classList.remove('hidden');
+                    sameValueContainer.classList.add('hidden');
+                }
+            }
+            
+            // Add event listeners
+            goalTypeField.addEventListener('change', updateFormBasedOnGoalType);
+            objectiveField.addEventListener('change', updateFormBasedOnObjective);
+            currentSetsInput.addEventListener('input', updateCurrentVolume);
+            currentRepsInput.addEventListener('input', updateCurrentVolume);
+            currentWeightInput.addEventListener('input', updateCurrentVolume);
+            goalSetsInput.addEventListener('input', updateGoalVolume);
+            goalRepsInput.addEventListener('input', updateGoalVolume);
+            goalWeightInput.addEventListener('input', updateGoalVolume);
+            
+            // Initialize form based on initial values
+            updateFormBasedOnGoalType();
         });
     </script>
 </body>

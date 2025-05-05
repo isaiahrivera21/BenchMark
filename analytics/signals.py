@@ -2,6 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from exerciselogging.models import UserLoggedExercise
 from foodlogging.models import UserLoggedFood
+from user.models import CustomUser
 from .models import Analytics
 from django.utils import timezone
 from datetime import timedelta
@@ -9,6 +10,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.db.models import Avg
+from django.db.models import Sum
 
 def create_exercise_metric(metric_name,metric_value,user,item):
 
@@ -47,8 +49,6 @@ def create_average_macro_metric(user, foods, time_range):
     )
 
     return averages
-
-
 
 @receiver(post_save, sender=UserLoggedExercise)
 def generate_exercise_metric(sender, instance, created, **kwargs):
@@ -175,5 +175,94 @@ def generate_average_macro_consumption(sender, instance, created, **kwargs):
         )
 
 
+# So we have to pull from whenver user food and exercise changes and then querey by date 
+# and I wanna get everything. 
+@receiver(post_save, sender=UserLoggedFood)
+@receiver(post_save, sender=UserLoggedExercise)
+@receiver(post_save, sender=CustomUser)
+def update_calorie_balance(sender, instance, **kwargs):
+    today = timezone.now().date()
+    MET = 3.6 
+
+    if sender in [UserLoggedFood, UserLoggedExercise]:
+        user = instance.user
+    elif sender == CustomUser:
+        user = instance
+    else:
+        return
+    
+    gender = user.gender
+    activity_factor = user.activity_level 
+    weight = user.weight_log[-1]
+    steps_taken = user.steps_log[-1] # or just take the avg or smth idk this one is kinda iffy. 
+    age = user.age
+    height = user.height 
+
+    if gender == 'M':
+        BMR = 10 * weight + 6.25 * height - 5 * age + 5 
+    else:
+        BMR = 10 * weight + 6.25 * height - 5 * age - 161
 
 
+    exercises = UserLoggedExercise.objects.filter(
+        user=user,
+        exercise_logged_at__date=today  
+    )
+    # exercise_logged_at__date=today <-- this is the reaosn why we are getting nothing 
+
+    if exercises.exists():
+        first_exercise = exercises.earliest('exercise_logged_at').exercise_logged_at
+        last_exercise = exercises.latest('exercise_logged_at').exercise_logged_at
+        time = (last_exercise - first_exercise).total_seconds() / 60  # Convert to minutes
+    else:
+        time = 0
+
+    exercise_calories_burned = time * (MET * 3.5 * weight  / 200) 
+
+    # formula: TDEE = (BMR × activity factor) + (steps taken × 0.04 × weight (kg)) + exercise calories burned.
+    tdee = (BMR * activity_factor) + (steps_taken * 0.04) + (exercise_calories_burned)
+
+    total_calories_consumed = UserLoggedFood.objects.filter(
+        user=user,
+        food_logged_at__date=today
+    ).aggregate(Sum('calories'))['calories__sum'] or 0
+
+    calorie_balance = tdee
+
+    print("BMR: ",BMR)
+    print("weight: ",weight)
+    print("height: ", height)
+    print("steps_taken: ", steps_taken)
+    print("time: ", time)
+    print("total_calories: ",total_calories_consumed)
+    print("exercises: ", exercises)
+    print("tdee: ", tdee)
+
+    Analytics.objects.create(
+        metric_name = "calorie_balance",
+        period_type = "Daily",
+        value = calorie_balance,
+        value_type = "Numerical",
+        user = user,
+        item_name = ""
+    )
+
+@receiver(post_save, sender=UserLoggedFood)
+def daily_total_consumed_calories(sender, instance, **kwargs):
+
+    today = timezone.now().date()
+    user = instance.user
+
+    total_calories_consumed = UserLoggedFood.objects.filter(
+        user=user,
+        food_logged_at__date=today
+    ).aggregate(Sum('calories'))['calories__sum']
+
+    Analytics.objects.create(
+        metric_name = "daily_calories_consumed",
+        period_type = "Daily",
+        value = total_calories_consumed,
+        value_type = "Numerical",
+        user = user,
+        item_name = ""
+    )

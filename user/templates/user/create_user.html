@@ -1,115 +1,183 @@
-<style>
-    body {
-        background-color: #1E1E1E; /* Charcoal black */
-        color: #ffffff; /* White text */
-        font-family: Arial, sans-serif;
-        display: flex;
-        justify-content: center; /* Fixed this line */
-        align-items: center;
-        min-height: 100vh;
-        margin: 0;
-    }
-    
-    .register-container {
-        background-color: #2A2A2A;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        width: 100%;
-        max-width: 400px;
-    }
-    
-    h2 {
-        text-align: center;
-        color: #88FF88; /* Pale neon green */
-        margin-bottom: 25px;
-    }
-    
-    form {
-        display: flex;
-        flex-direction: column;
-    }
-    
-    /* Unified input styling for all form fields */
-    input[type="text"],
-    input[type="password"],
-    input[type="number"] {
-        background-color: #333333;
-        border: none;
-        border-radius: 5px;
-        padding: 12px;
-        margin-bottom: 15px;
-        color: white;
-        font-size: 16px;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-        width: 100%;
-    }
-    
-    input[type="text"]:focus,
-    input[type="password"]:focus,
-    input[type="number"]:focus {
-        outline: none;
-        box-shadow: 0 0 10px rgba(136, 255, 136, 0.5); /* Green glow */
-    }
-    
-    button[type="submit"] {
-        background-color: #88FF88; /* Pale neon green */
-        color: #1E1E1E; /* Dark text */
-        border: none;
-        border-radius: 5px;
-        padding: 12px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s;
-        margin-top: 10px;
-    }
-    
-    button[type="submit"]:hover {
-        background-color: #72E372; /* Darker green on hover */
-    }
-    
-    a {
-        color: #00FFFF; /* Cyan */
-        text-decoration: none;
-    }
-    
-    a:hover {
-        text-decoration: underline;
-    }
-    
-    /* Form help text styling */
-    .help-text {
-        color: #aaaaaa;
-        font-size: 14px;
-        margin-top: 5px;
-        margin-bottom: 15px;
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 480px) {
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register</title>
+    <style>
+        body {
+            background-color: #1E1E1E; /* Charcoal black */
+            color: #ffffff; /* White text */
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        
         .register-container {
-            padding: 20px;
-            margin: 20px;
+            background-color: #2A2A2A;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #88FF88; /* Pale neon green */
+            margin-bottom: 25px;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
         }
         
         input[type="text"],
         input[type="password"],
         input[type="number"],
-        button[type="submit"] {
-            padding: 10px;
+        select {
+            background-color: #333333;
+            border: none;
+            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 15px;
+            color: white;
+            font-size: 16px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            width: 100%;
         }
-    }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(136, 255, 136, 0.5); /* Green glow */
+        }
+        
+        button[type="submit"] {
+            background-color: #88FF88; /* Pale neon green */
+            color: #1E1E1E; /* Dark text */
+            border: none;
+            border-radius: 5px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        
+        button[type="submit"]:hover {
+            background-color: #72E372; /* Darker green on hover */
+        }
+        
+        a {
+            color: #00FFFF; /* Cyan */
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .help-text {
+            color: #aaaaaa;
+            font-size: 14px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 480px) {
+            .register-container {
+                padding: 20px;
+                margin: 20px;
+            }
+            
+            input[type="text"],
+            input[type="password"],
+            input[type="number"],
+            button[type="submit"] {
+                padding: 10px;
+            }
+        }
+        
+        .height-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .height-group input {
+            flex: 1;
+        }
     </style>
-    
+</head>
+<body>
     <div class="register-container">
         <h2>Register</h2>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}  <!-- Renders username, password1, password2, height, weight -->
+            {{ form.username.label_tag }}
+            {{ form.username }}
+            {{ form.username.help_text }}
+            {{ form.username.errors }}
+            
+            {{ form.password1.label_tag }}
+            {{ form.password1 }}
+            {{ form.password1.help_text }}
+            {{ form.password1.errors }}
+            
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+            {{ form.password2.help_text }}
+            {{ form.password2.errors }}
+            
+            <div class="height-group">
+                <div>
+                    {{ form.feet.label_tag }}
+                    {{ form.feet }}
+                    {{ form.feet.errors }}
+                </div>
+                <div>
+                    {{ form.inches.label_tag }}
+                    {{ form.inches }}
+                    {{ form.inches.errors }}
+                </div>
+            </div>
+            
+            {{ form.weight.label_tag }}
+            {{ form.weight }}
+            {{ form.weight.help_text }}
+            {{ form.weight.errors }}
+            
+            {{ form.age.label_tag }}
+            {{ form.age }}
+            {{ form.age.help_text }}
+            {{ form.age.errors }}
+            
+            {{ form.pace_unit.label_tag }}
+            {{ form.pace_unit }}
+            {{ form.pace_unit.help_text }}
+            {{ form.pace_unit.errors }}
+            
+            {{ form.gender.label_tag }}
+            {{ form.gender }}
+            {{ form.gender.help_text }}
+            {{ form.gender.errors }}
+            
+            {{ form.activity_level.label_tag }}
+            {{ form.activity_level }}
+            {{ form.activity_level.help_text }}
+            {{ form.activity_level.errors }}
+            
             <button type="submit">Register</button>
         </form>
         <p class="text-center">
             Already have an account? <a href="{% url 'login' %}">Login here</a>
         </p>
     </div>
+</body>
+</html>

@@ -44,6 +44,10 @@ def create_trajectory(request):
             trajectory.user = request.user  # Assuming you have a user field in your model
             trajectory.save()
             return redirect('index')  # Redirect to a list of trajectories or another page
+        
+        else:
+            # Print validation errors to the console/server log
+            print(form.errors)
     else:
         form = TrajectoryForm()
     return render(request, 'trajectories/log_trajectory.html', {'form': form})
