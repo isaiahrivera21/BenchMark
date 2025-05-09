@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize calorie chart
     const calorieTotal = parseInt('{{ daily_calories.value }}', 10) || 0;
     const calorieBalance = parseInt('{{ calorie_balance.value }}', 10) || 0;
-    const calorieExpenditure = calorieTotal - calorieBalance;
+    const calorieExpenditure = calorieBalance;
 
     // Custom plugin to display text in the center of the chart
     const centerTextPlugin = {

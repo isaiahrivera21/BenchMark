@@ -31,7 +31,7 @@
             gap: 20px;
             margin: 20px 0;
         }
-        .add-food-btn, .set-goal-btn, .home-btn {
+        .add-food-btn, .set-goal-btn {
             padding: 12px 24px;
             text-align: center;
             text-decoration: none;
@@ -54,13 +54,6 @@
         }
         .set-goal-btn:hover {
             background-color: #e8e8ff;
-        }
-        .home-btn {
-            background-color: #88CCFF;
-            color: #1E1E1E;
-        }
-        .home-btn:hover {
-            background-color: #72B7FF;
         }
         .charts-container {
             display: grid;
@@ -285,11 +278,6 @@
                 <span>High Calories (>2500)</span>
             </div>
         </div>
-
-        <!-- Back to Homepage Button -->
-        <div class="button-container">
-            <a href="/homepage/" class="home-btn">Back to homepage</a>
-        </div>
     </div>
 
     <script>
@@ -300,35 +288,22 @@
                 if (chart.data.datasets[0].data.length === 0) return;
 
                 const ctx = chart.ctx;
-                const calorieIntake = parseInt('{{ daily_calories.value }}', 10) || 0;
-                const calorieExpenditure = parseInt('{{ calorie_balance.value }}', 10) || 0;
+                const calorieBalance = parseInt('{{ calorie_balance.value }}', 10) || 0;
+                const calorieTotal = parseInt('{{ daily_calories.value }}', 10) || 0;
 
-                // Calculate balance ratio and status
+                // Calculate balance status
                 let statusText = '';
-                if (calorieExpenditure === 0) {
-                    statusText = 'No Expenditure Data';
+                const balancePercentage = (calorieBalance) / calorieTotal; 
+                
+                // JUST NEED TO FIX THIS PART HERE!!!!!
+                if (calorieBalance === 1) {
+                    statusText = 'Balanced';
+                } else if (balancePercentage >= 25) {
+                    statusText = calorieBalance > 0 ? 'Minor Surplus' : 'Minor Deficit';
+                } else if (balancePercentage >= 10) {
+                    statusText = calorieBalance > 0 ? 'Moderate Surplus' : 'Moderate Deficit';
                 } else {
-                    const balanceRatio = calorieIntake / calorieExpenditure;
-                    
-                    if (balanceRatio === 1) {
-                        statusText = 'Balanced';
-                    } else if (balanceRatio > 1) {
-                        if (balanceRatio > 1.5) {
-                            statusText = 'Major Surplus';
-                        } else if (balanceRatio > 1.2) {
-                            statusText = 'Moderate Surplus';
-                        } else {
-                            statusText = 'Minor Surplus';
-                        }
-                    } else {
-                        if (balanceRatio < 0.5) {
-                            statusText = 'Major Deficit';
-                        } else if (balanceRatio < 0.8) {
-                            statusText = 'Moderate Deficit';
-                        } else {
-                            statusText = 'Minor Deficit';
-                        }
-                    }
+                    statusText = calorieBalance > 0 ? 'Major Surplus' : 'Major Deficit';
                 }
 
                 ctx.save();
@@ -343,9 +318,9 @@
                 // Display status text in center
                 ctx.fillText(statusText, centerX, centerY);
                 
-                // Display calorie values below status
+                // Display calorie balance value below status
                 ctx.font = 'bold 16px Arial';
-                ctx.fillText(`Intake: ${calorieIntake} | Expenditure: ${calorieExpenditure}`, centerX, centerY + 30);
+                ctx.fillText(`Calorie Balance: ${calorieBalance}`, centerX, centerY + 30);
                 ctx.restore();
             }
         };
@@ -360,8 +335,9 @@
             }
             
             // Initialize calorie chart
-            const calorieIntake = parseInt('{{ daily_calories.value }}', 10) || 0;
-            const calorieExpenditure = parseInt('{{ calorie_balance.value }}', 10) || 0;
+            const calorieTotal = parseInt('{{ daily_calories.value }}', 10) || 0;
+            const calorieBalance = parseInt('{{ calorie_balance.value }}', 10) || 0;
+            const calorieExpenditure = calorieTotal - calorieBalance;
 
             const calorieCtx = document.getElementById('calorieChart').getContext('2d');
             const calorieChart = new Chart(calorieCtx, {
@@ -369,10 +345,10 @@
                 data: {
                     labels: ['Calorie Intake', 'Calorie Expenditure'],
                     datasets: [{
-                        data: [calorieIntake, calorieExpenditure],
+                        data: [Math.abs(calorieBalance), calorieExpenditure],
                         backgroundColor: [
-                            '#FF8C00',
-                            '#4CAF50'
+                            calorieBalance >= 0 ? '#FF8C00' : '#4CAF50',
+                            calorieBalance >= 0 ? '#4CAF50' : '#FF8C00'
                         ],
                         borderWidth: 0
                     }]
