@@ -81,6 +81,25 @@
             background-color: #72E372; /* Darker green on hover */
         }
 
+        .back-button {
+            background-color: #FF8C00; /* Orange */
+            color: #1E1E1E; /* Dark text */
+            border: none;
+            border-radius: 5px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+            text-align: center;
+            display: block;
+        }
+
+        .back-button:hover {
+            background-color: #E67E00; /* Darker orange on hover */
+        }
+
         .autocomplete-items {
             position: absolute;
             border: 1px solid #d4d4d4;
@@ -176,6 +195,7 @@
             </div>
             <button type="submit">Submit</button>
         </form>
+        <button class="back-button" onclick="window.location.href='/food/'">Back to Food Homepage</button>
     </div>
 
     <script>
@@ -206,8 +226,8 @@
                                 document.getElementById('calories').value = item.calories;
                                 document.getElementById('fat').value = item.fat;
                                 document.getElementById('carbohydrates').value = item.carbohydrates;
-                                document.getElementById('protien').value = item.protein;
-                                document.getElementById('cholestorol').value = item.cholesterol;
+                                document.getElementById('protein').value = item.protein;
+                                document.getElementById('cholesterol').value = item.cholesterol;
                                 document.getElementById('sodium').value = item.sodium;
                                 document.getElementById('sugar').value = item.sugar;
                                 autocompleteDiv.innerHTML = '';

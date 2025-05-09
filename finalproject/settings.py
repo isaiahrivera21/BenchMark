@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-mtd_*0js*&&-l_c^6ai6r=e)1vcx6fl*^9#$xntgn18rt^dv7%"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 AUTH_USER_MODEL = 'user.CustomUser'
@@ -90,7 +90,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(os.environ.get('REDIS_HOST', 'localhost'), os.environ.get('REDIS_PORT', 6379))]
+            "hosts": [(os.environ.get('REDIS_HOST', '10.5.1.135'), os.environ.get('REDIS_PORT', 6379))]
         },
     },
 }
