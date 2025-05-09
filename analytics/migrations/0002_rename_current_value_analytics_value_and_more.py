@@ -6,27 +6,37 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('analytics', '0001_initial'),
+        ("analytics", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='analytics',
-            old_name='current_value',
-            new_name='value',
+            model_name="analytics",
+            old_name="current_value",
+            new_name="value",
         ),
         migrations.RemoveField(
-            model_name='analytics',
-            name='previous_value',
+            model_name="analytics",
+            name="previous_value",
         ),
         migrations.AddField(
-            model_name='analytics',
-            name='value_type',
-            field=models.CharField(choices=[('PERCENTAGE', 'Percentage'), ('NUMERICAL', 'Numerical')], default='Session'),
+            model_name="analytics",
+            name="value_type",
+            field=models.CharField(
+                choices=[("PERCENTAGE", "Percentage"), ("NUMERICAL", "Numerical")],
+                default="Session",
+            ),
         ),
         migrations.AlterField(
-            model_name='analytics',
-            name='period_type',
-            field=models.CharField(choices=[('DAILY', 'Daily'), ('WEEKLY', 'Weekly'), ('MONTHLY', 'Monthly'), ('SESSION', 'Session')]),
+            model_name="analytics",
+            name="period_type",
+            field=models.CharField(
+                choices=[
+                    ("DAILY", "Daily"),
+                    ("WEEKLY", "Weekly"),
+                    ("MONTHLY", "Monthly"),
+                    ("SESSION", "Session"),
+                ]
+            ),
         ),
     ]

@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('foodlogging', '0003_userloggedfood_user'),
+        ("foodlogging", "0003_userloggedfood_user"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='userloggedfood',
-            name='food_logged_at',
+            model_name="userloggedfood",
+            name="food_logged_at",
             field=models.DateTimeField(auto_now_add=True),
         ),
     ]

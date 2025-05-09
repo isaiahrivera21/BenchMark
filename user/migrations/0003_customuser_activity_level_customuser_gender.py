@@ -6,18 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user', '0002_customuser_steps_log_customuser_steps_log_dates_and_more'),
+        ("user", "0002_customuser_steps_log_customuser_steps_log_dates_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customuser',
-            name='activity_level',
-            field=models.FloatField(blank=True, choices=[(1.2, 'Sedentary (little to no exercise)'), (1.375, 'Lightly active (light exercise 1-3 days/week)'), (1.55, 'Moderately active (moderate exercise 3-5 days/week)'), (1.725, 'Very active (hard exercise 6-7 days/week)'), (1.9, 'Super active (very hard exercise & physical job)')], null=True),
+            model_name="customuser",
+            name="activity_level",
+            field=models.FloatField(
+                blank=True,
+                choices=[
+                    (1.2, "Sedentary (little to no exercise)"),
+                    (1.375, "Lightly active (light exercise 1-3 days/week)"),
+                    (1.55, "Moderately active (moderate exercise 3-5 days/week)"),
+                    (1.725, "Very active (hard exercise 6-7 days/week)"),
+                    (1.9, "Super active (very hard exercise & physical job)"),
+                ],
+                null=True,
+            ),
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='gender',
-            field=models.CharField(blank=True, choices=[('M', 'Male'), ('F', 'Female')], max_length=1),
+            model_name="customuser",
+            name="gender",
+            field=models.CharField(
+                blank=True, choices=[("M", "Male"), ("F", "Female")], max_length=1
+            ),
         ),
     ]

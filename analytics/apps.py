@@ -8,5 +8,3 @@ class AnalyticsConfig(AppConfig):
     def ready(self):
         # This imports your signals when the app is ready
         import analytics.signals
-    
-

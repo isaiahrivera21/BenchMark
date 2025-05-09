@@ -7,13 +7,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('exerciselogging', '0001_initial'),
+        ("exerciselogging", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userloggedexercise',
-            name='target_muscles',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=100), blank=True, null=True, size=None),
+            model_name="userloggedexercise",
+            name="target_muscles",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.CharField(max_length=100),
+                blank=True,
+                null=True,
+                size=None,
+            ),
         ),
     ]

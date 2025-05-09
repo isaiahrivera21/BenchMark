@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('analytics', '0002_rename_current_value_analytics_value_and_more'),
+        ("analytics", "0002_rename_current_value_analytics_value_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='analytics',
-            name='value',
+            model_name="analytics",
+            name="value",
             field=models.FloatField(),
         ),
     ]

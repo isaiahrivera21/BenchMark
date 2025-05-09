@@ -7,24 +7,41 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='UserLoggedFood',
+            name="UserLoggedFood",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('food_name', models.CharField(max_length=200)),
-                ('food_logged_at', models.DateTimeField(verbose_name='food date')),
-                ('meal_type', models.CharField(choices=[('BREAKFAST', 'Breakfast'), ('LUNCH', 'Lunch'), ('DINNER', 'Dinner'), ('SNACK', 'Snack')])),
-                ('serving_size', models.IntegerField()),
-                ('calories', models.IntegerField()),
-                ('fat', models.IntegerField()),
-                ('carbohydrates', models.IntegerField()),
-                ('protien', models.IntegerField()),
-                ('cholestorol', models.IntegerField()),
-                ('sodium', models.IntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("food_name", models.CharField(max_length=200)),
+                ("food_logged_at", models.DateTimeField(verbose_name="food date")),
+                (
+                    "meal_type",
+                    models.CharField(
+                        choices=[
+                            ("BREAKFAST", "Breakfast"),
+                            ("LUNCH", "Lunch"),
+                            ("DINNER", "Dinner"),
+                            ("SNACK", "Snack"),
+                        ]
+                    ),
+                ),
+                ("serving_size", models.IntegerField()),
+                ("calories", models.IntegerField()),
+                ("fat", models.IntegerField()),
+                ("carbohydrates", models.IntegerField()),
+                ("protien", models.IntegerField()),
+                ("cholestorol", models.IntegerField()),
+                ("sodium", models.IntegerField()),
             ],
         ),
     ]

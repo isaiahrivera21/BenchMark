@@ -7,28 +7,36 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('user', '0001_initial'),
+        ("user", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customuser',
-            name='steps_log',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(), blank=True, null=True, size=None),
+            model_name="customuser",
+            name="steps_log",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.IntegerField(), blank=True, null=True, size=None
+            ),
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='steps_log_dates',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.DateField(), blank=True, null=True, size=None),
+            model_name="customuser",
+            name="steps_log_dates",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.DateField(), blank=True, null=True, size=None
+            ),
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='weight_log',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.FloatField(), blank=True, null=True, size=None),
+            model_name="customuser",
+            name="weight_log",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.FloatField(), blank=True, null=True, size=None
+            ),
         ),
         migrations.AddField(
-            model_name='customuser',
-            name='weight_log_dates',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.DateField(), blank=True, null=True, size=None),
+            model_name="customuser",
+            name="weight_log_dates",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.DateField(), blank=True, null=True, size=None
+            ),
         ),
     ]

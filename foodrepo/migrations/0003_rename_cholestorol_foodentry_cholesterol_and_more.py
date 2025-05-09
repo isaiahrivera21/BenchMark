@@ -6,18 +6,18 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('foodrepo', '0002_foodentry_sugars'),
+        ("foodrepo", "0002_foodentry_sugars"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='foodentry',
-            old_name='cholestorol',
-            new_name='cholesterol',
+            model_name="foodentry",
+            old_name="cholestorol",
+            new_name="cholesterol",
         ),
         migrations.RenameField(
-            model_name='foodentry',
-            old_name='protien',
-            new_name='protein',
+            model_name="foodentry",
+            old_name="protien",
+            new_name="protein",
         ),
     ]
