@@ -180,7 +180,7 @@ def generate_average_macro_consumption(sender, instance, created, **kwargs):
 @receiver(post_save, sender=UserLoggedFood)
 @receiver(post_save, sender=UserLoggedExercise)
 @receiver(post_save, sender=CustomUser)
-def update_calorie_balance(sender, instance, **kwargs):
+def update_calorie_balance(sender, instance, created, **kwargs):
     today = timezone.now().date()
     MET = 3.6 
 
@@ -194,7 +194,13 @@ def update_calorie_balance(sender, instance, **kwargs):
     gender = user.gender
     activity_factor = user.activity_level 
     weight = user.weight_log[-1]
-    steps_taken = user.steps_log[-1] # or just take the avg or smth idk this one is kinda iffy. 
+
+
+    if hasattr(user, 'steps_log') and user.steps_log:
+        steps_taken = user.steps_log[-1] if not created else 0
+    else:
+        steps_taken = 0
+
     age = user.age
     height = user.height 
 
