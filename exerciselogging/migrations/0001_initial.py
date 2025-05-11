@@ -15,16 +15,35 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='UserLoggedExercise',
+            name="UserLoggedExercise",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('exercise_name', models.CharField(max_length=200)),
-                ('exercise_logged_at', models.DateTimeField(verbose_name='exercise date')),
-                ('sets', models.IntegerField()),
-                ('reps', models.IntegerField()),
-                ('weight', models.IntegerField()),
-                ('notes', models.CharField(blank=True, max_length=200, null=True)),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("exercise_name", models.CharField(max_length=200)),
+                (
+                    "exercise_logged_at",
+                    models.DateTimeField(verbose_name="exercise date"),
+                ),
+                ("sets", models.IntegerField()),
+                ("reps", models.IntegerField()),
+                ("weight", models.IntegerField()),
+                ("notes", models.CharField(blank=True, max_length=200, null=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

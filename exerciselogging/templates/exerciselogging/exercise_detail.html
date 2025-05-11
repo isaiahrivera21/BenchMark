@@ -7,17 +7,22 @@
     <title>Exercise Detail</title>
     <style>
         body {
+            background-color: #1E1E1E; /* Charcoal black background */
+            color: #ffffff; /* White text */
             font-family: Arial, sans-serif;
             margin: 20px;
-            line-height: 1.6;
         }
         h1, h2 {
             text-align: center;
-            color: #333;
+            color: #88FF88; /* Neon green text */
         }
         .dashboard-container {
             max-width: 800px;
             margin: 0 auto;
+            padding: 20px;
+            background-color: #2A2A2A; /* Dark container background */
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
         }
         .button-container {
             display: flex;
@@ -25,17 +30,19 @@
             gap: 20px;
             margin: 20px 0;
         }
-        .add-log-btn {
+        .add-log-btn, .back-btn {
             padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
+            background-color: #88FF88; /* Neon green button */
+            color: #1E1E1E; /* Dark text */
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
         }
-        .add-log-btn:hover {
-            background-color: #45a049;
+        .add-log-btn:hover, .back-btn:hover {
+            background-color: #72E372; /* Darker green on hover */
         }
         .analytics-container {
             display: grid;
@@ -44,43 +51,49 @@
             margin: 30px 0;
         }
         .analytic-card {
-            background-color: #f9f9f9;
+            background-color: #333333; /* Dark card background */
             padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             text-align: center;
         }
         .analytic-card h3 {
             margin-top: 0;
-            color: #333;
             font-size: 16px;
+            color: #ffffff;
         }
         .analytic-card p {
             margin-bottom: 0;
             font-size: 20px;
             font-weight: bold;
-            color: #2196F3;
+            color: #88FF88; /* Neon green text */
         }
         .exercise-log-entry {
-            background-color: white;
+            background-color: #2A2A2A; /* Dark log entry background */
             border-radius: 8px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         .exercise-log-entry h3 {
             margin-top: 0;
-            color: #333;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #444444;
             padding-bottom: 10px;
+            color: #ffffff;
         }
         .exercise-log-entry p {
             margin: 10px 0;
+            color: #ffffff;
         }
-        hr {
-            border: none;
-            border-top: 1px solid #ddd;
-            margin: 20px 0;
+        .no-data {
+            color: #88FF88; /* Neon green text */
+        }
+        a {
+            color: #88FF88; /* Neon green links */
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -88,7 +101,9 @@
     <div class="dashboard-container">
         <h1>Logs for {{ exercise_name }}</h1>
         
-        <a href="{% url 'log_exercise' %}?exercise_name={{ exercise_name }}" class="add-log-btn">Add Another Log</a>
+        <div class="button-container">
+            <a href="{% url 'log_exercise' %}?exercise_name={{ exercise_name }}" class="add-log-btn">Add Another Log</a>
+        </div>
 
         <h2>Latest Analytics</h2>
         <div class="analytics-container">
@@ -98,6 +113,12 @@
                     <p>{{ analytic.value }}</p>
                 </div>
             {% endfor %}
+            {% if latest_analytics|length == 0 %}
+                <div class="analytic-card">
+                    <h3>No data available</h3>
+                    <p></p>
+                </div>
+            {% endif %}
         </div>
 
         <h2>Exercise History</h2>
@@ -114,6 +135,11 @@
         {% empty %}
             <p>No logs found for {{ exercise_name }}.</p>
         {% endfor %}
+
+        <!-- Back to Homepage Button -->
+        <div class="button-container">
+            <a href="/exercise/" class="back-btn">Back to Exercise Homepage</a>
+        </div>
     </div>
 </body>
 </html>

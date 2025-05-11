@@ -4,6 +4,7 @@ from django.contrib import admin
 from .models import Trajectory
 from .forms import TrajectoryForm
 
+
 @admin.register(Trajectory)
 class TrajectoryAdmin(admin.ModelAdmin):
     form = TrajectoryForm

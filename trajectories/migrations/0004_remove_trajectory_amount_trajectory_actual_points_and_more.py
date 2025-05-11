@@ -7,27 +7,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trajectories', '0003_trajectory_projected_point_trajectory_timestamps'),
+        ("trajectories", "0003_trajectory_projected_point_trajectory_timestamps"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='trajectory',
-            name='amount',
+            model_name="trajectory",
+            name="amount",
         ),
         migrations.AddField(
-            model_name='trajectory',
-            name='actual_points',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.FloatField(), blank=True, default=list, null=True, size=None),
+            model_name="trajectory",
+            name="actual_points",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.FloatField(),
+                blank=True,
+                default=list,
+                null=True,
+                size=None,
+            ),
         ),
         migrations.AddField(
-            model_name='trajectory',
-            name='current_amount',
+            model_name="trajectory",
+            name="current_amount",
             field=models.IntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='trajectory',
-            name='future_amount',
+            model_name="trajectory",
+            name="future_amount",
             field=models.IntegerField(default=1),
         ),
     ]

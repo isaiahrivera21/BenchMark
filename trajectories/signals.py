@@ -12,44 +12,45 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 
-# Function to generate dates based on the interval
 def generate_dates(start_date, total_intervals, interval_type):
     dates = []
     current_date = start_date
-    
+
     for t in range(total_intervals + 1):
         dates.append(current_date)
-        
-        if interval_type == 'DAILY':
+
+        if interval_type == "DAILY":
             current_date += timedelta(days=1)
-        elif interval_type == 'WEEKLY':
+        elif interval_type == "WEEKLY":
             current_date += timedelta(weeks=1)
-        elif interval_type == 'MONTHLY':
-            # Assuming approximately 30 days per month
+        elif interval_type == "MONTHLY":
             current_date += timedelta(days=30)
-    
+
     return dates
 
-# A --> current point 
-# B --> Where you want to be 
+
+# A --> current point
+# B --> Where you want to be
 def generate_trajectory(A, B, total_intervals, interval_type):
     trajectory = []
-    
-    if interval_type not in ['INCREASE', 'DECREASE', 'SAME']:
-        raise ValueError(f"Invalid interval_type: {interval_type}. Must be 'INCREASE', 'DECREASE', or 'SAME'.")
-    
+
+    if interval_type not in ["INCREASE", "DECREASE", "SAME"]:
+        raise ValueError(
+            f"Invalid interval_type: {interval_type}. Must be 'INCREASE', 'DECREASE', or 'SAME'."
+        )
+
     for t in range(total_intervals + 1):
-        if interval_type == 'INCREASE':
+        if interval_type == "INCREASE":
             y = A + (B - A) * np.log(t + 1) / np.log(total_intervals + 1)
-        elif interval_type == 'DECREASE':
+        elif interval_type == "DECREASE":
             if B >= A:
                 raise ValueError("For 'DECREASE' type, B must be less than A.")
             y = A - (A - B) * np.log(t + 1) / np.log(total_intervals + 1)
-        elif interval_type == 'SAME':
+        elif interval_type == "SAME":
             y = A
-        
+
         trajectory.append(y)
-    
+
     return trajectory
 
 
@@ -57,51 +58,116 @@ def generate_trajectory(A, B, total_intervals, interval_type):
 def generate_trajectory_data(sender, instance, created, **kwargs):
 
     if created and instance.user:
-        # Calculate total duration in days
-        # start_date = instance.start_date.date()
         total_days = (instance.target_date - instance.start_date).days
 
         # Adjust total_intervals based on interval type
-        if instance.pace_type == 'DAILY':
+        if instance.pace_type == "DAILY":
             total_intervals = total_days
-        elif instance.pace_type == 'WEEKLY':
-            total_intervals = total_days // 7  # Convert days to weeks
-        elif instance.pace_type == 'MONTHLY':
-            total_intervals = total_days // 30  # Approximate a month as 30 days
+        elif instance.pace_type == "WEEKLY":
+            total_intervals = total_days // 7
+        elif instance.pace_type == "MONTHLY":
+            total_intervals = total_days // 30
 
-        instance.projected_points = generate_trajectory(instance.current_amount, instance.future_amount, total_intervals,instance.objective)
-        instance.timestamps = generate_dates(instance.start_date, total_intervals, instance.pace_type)
-        instance.save() 
-        
+        instance.projected_points = generate_trajectory(
+            instance.current_amount,
+            instance.future_amount,
+            total_intervals,
+            instance.objective,
+        )
+        instance.timestamps = generate_dates(
+            instance.start_date, total_intervals, instance.pace_type
+        )
+        instance.save()
+
 
 @receiver(post_save, sender=UserLoggedExercise)
 def update_exercise_tracking(sender, instance, created, **kwargs):
     if created and instance.user:
-        
-        # we have to querey for all trajectories associated with the thing we are trying to update (aka need to querey for focus area).
-        # for exercises we need to querey for the specific name of that exercise. 
+        logged_date = instance.exercise_logged_at.date()
 
+        active_trajectories = Trajectory.objects.filter(
+            user=instance.user, goal_type="EXERCISE", focus_area=instance.exercise_name
+        )
 
-        # we need some logic here to check if we get a hit or not. If we don't just pass or exit
+        for trajectory in active_trajectories:
+            latest_volume = (
+                Analytics.objects.filter(
+                    user=instance.user,
+                    metric_name="Volume",
+                    item_name=instance.exercise_name,
+                )
+                .order_by("-id")
+                .first()
+            )
 
-        # if we do hit we need to acess the weight sets or reps???? or do we acess something from analytics. For exercise its not specifically clear what they want to increase.
-        # given that we only have one int for each I think for exercises we should just do trajectories based on volume. For expected we can have something that makes 
-        # a change in the box to sets reps and weight BUT in the backend its gonna multiply out to be volume.
+            A = latest_volume.value if latest_volume else 0
+            B = trajectory.future_amount
+            interval_type = trajectory.objective
 
-        # then for exercises with no weights we can measure just in reps and make sure to set weight and sets to 1. 
-        pass
-        
+            total_days = (trajectory.target_date - logged_date).days
+
+            if trajectory.pace_type == "DAILY":
+                total_intervals = total_days
+            elif trajectory.pace_type == "WEEKLY":
+                total_intervals = total_days // 7
+            elif trajectory.pace_type == "MONTHLY":
+                total_intervals = total_days // 30
+
+            generated_points = generate_trajectory(A, B, total_intervals, interval_type)
+
+            trajectory.actual_points = generated_points
+            trajectory.save()
 
 
 @receiver(post_save, sender=UserLoggedFood)
 def update_food_tracking(sender, instance, created, **kwargs):
     if created and instance.user:
-        # we have to querey for all trajectories associated with the thing we are trying to update (aka need to querey for focus area).
-        # for food we specifically need to querey just to see if any of the macros listed have trajectories associated with them.
-        
+        logged_date = instance.food_logged_at.date()
 
-        # we need some logic here to check if we get a hit or not. If we don't just pass or exit
+        active_trajectories = Trajectory.objects.filter(
+            user=instance.user,
+            goal_type="FOOD",
+            start_date__lte=logged_date,
+            target_date__gte=logged_date,
+        )
 
-        # if we do have hit then we want to redo the total days calculation and send in a new starting point (wait I think I need to have something that records the total macros the user is consuming per day)
-        # then the logic should change to whenever that specific thing changes instead of each logged food. 
-        pass
+        for trajectory in active_trajectories:
+            focus_field_map = {
+                "CALORIES": "calories",
+                "FAT": "fat",
+                "CARBOHYDRATES": "carbohydrates",
+                "PROTEIN": "proten",
+                "CHOLESTEROL": "cholesterol",
+                "SODIUM": "sodium",
+                "SUGAR": "sugar",
+            }
+
+            field_name = focus_field_map.get(trajectory.focus_area)
+
+            if field_name:
+                value = getattr(instance, field_name, 0)
+
+                total_days = (trajectory.target_date - logged_date).days
+
+                if trajectory.pace_type == "DAILY":
+                    total_intervals = total_days
+                elif trajectory.pace_type == "WEEKLY":
+                    total_intervals = total_days // 7
+                elif trajectory.pace_type == "MONTHLY":
+                    total_intervals = total_days // 30
+
+                if trajectory.objective == "INCREASE":
+                    generated_points = generate_trajectory(
+                        value, trajectory.future_amount, total_intervals, "INCREASE"
+                    )
+                elif trajectory.objective == "DECREASE":
+                    generated_points = generate_trajectory(
+                        value, trajectory.future_amount, total_intervals, "DECREASE"
+                    )
+                else:  # SAME
+                    generated_points = generate_trajectory(
+                        value, value, total_intervals, "SAME"
+                    )
+
+                trajectory.actual_points = generated_points
+                trajectory.save()

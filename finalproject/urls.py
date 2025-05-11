@@ -17,7 +17,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.views.generic.base import RedirectView
-from django.urls import include,path
+from django.urls import include, path
 from user import views as user_views
 from homepage import views as homepage_views
 from analytics import views as analytics_views
@@ -32,11 +32,11 @@ urlpatterns = [
     path("macrosAI/", include("macrosAI.urls")),
     path("trajectories/", include("trajectories.urls")),
     path("user/", include("user.urls")),
-    path('', RedirectView.as_view(url='/create-user/', permanent=True)),
-    path('create-user/', user_views.create_user, name='create_user'),
-    path('homepage/',include("homepage.urls"),name='homepage'),
-    path('log_exercise/', exercise_views.log_exercise, name='log_exercise'),
-    path('exercise/', exercise_views.exercise_homepage, name='exercise_homepage'),
-    path('food/', food_views.food_homepage, name='food_homepage'),
-    path('log_food/', food_views.log_food, name='log_food'),
+    path("", RedirectView.as_view(url="/create-user/", permanent=True)),
+    path("create-user/", user_views.create_user, name="create_user"),
+    path("homepage/", include("homepage.urls"), name="homepage"),
+    path("log_exercise/", exercise_views.log_exercise, name="log_exercise"),
+    path("exercise/", exercise_views.exercise_homepage, name="exercise_homepage"),
+    path("food/", food_views.food_homepage, name="food_homepage"),
+    path("log_food/", food_views.log_food, name="log_food"),
 ]

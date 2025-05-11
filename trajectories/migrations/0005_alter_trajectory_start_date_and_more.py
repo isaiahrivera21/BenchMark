@@ -7,18 +7,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trajectories', '0004_remove_trajectory_amount_trajectory_actual_points_and_more'),
+        (
+            "trajectories",
+            "0004_remove_trajectory_amount_trajectory_actual_points_and_more",
+        ),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='trajectory',
-            name='start_date',
+            model_name="trajectory",
+            name="start_date",
             field=models.DateField(auto_now_add=True),
         ),
         migrations.AlterField(
-            model_name='trajectory',
-            name='timestamps',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.DateField(), blank=True, default=list, null=True, size=None),
+            model_name="trajectory",
+            name="timestamps",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.DateField(),
+                blank=True,
+                default=list,
+                null=True,
+                size=None,
+            ),
         ),
     ]

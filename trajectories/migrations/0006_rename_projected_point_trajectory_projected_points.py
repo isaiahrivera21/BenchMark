@@ -6,13 +6,13 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trajectories', '0005_alter_trajectory_start_date_and_more'),
+        ("trajectories", "0005_alter_trajectory_start_date_and_more"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='trajectory',
-            old_name='projected_point',
-            new_name='projected_points',
+            model_name="trajectory",
+            old_name="projected_point",
+            new_name="projected_points",
         ),
     ]

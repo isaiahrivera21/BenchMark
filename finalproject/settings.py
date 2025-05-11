@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from django.urls import reverse_lazy
-import os 
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,10 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-mtd_*0js*&&-l_c^6ai6r=e)1vcx6fl*^9#$xntgn18rt^dv7%"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
-AUTH_USER_MODEL = 'user.CustomUser'
+ALLOWED_HOSTS = ["*"]
+AUTH_USER_MODEL = "user.CustomUser"
 
 # Application definition
 
@@ -90,7 +90,12 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [(os.environ.get('REDIS_HOST', 'localhost'), os.environ.get('REDIS_PORT', 6379))]
+            "hosts": [
+                (
+                    os.environ.get("REDIS_HOST", "10.5.1.135"),
+                    os.environ.get("REDIS_PORT", 6379),
+                )
+            ]
         },
     },
 }
@@ -106,13 +111,13 @@ CHANNEL_LAYERS = {
 # }
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'password',
-        'HOST': 'db', # name of our docker container and it will resolve into the IP address for the container inside our network.
-        'PORT': '5432',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "password",
+        "HOST": "db",  # name of our docker container and it will resolve into the IP address for the container inside our network.
+        "PORT": "5432",
     }
 }
 
@@ -135,9 +140,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LOGIN_URL = reverse_lazy('login')  # if not logged in
-LOGIN_REDIRECT_URL = reverse_lazy('index')  # REDIRECT AFTER LOGIN
-LOGOUT_REDIRECT_URL = reverse_lazy('login')  # REDIRECT AFTER LOGOUT
+LOGIN_URL = reverse_lazy("login")  # if not logged in
+LOGIN_REDIRECT_URL = reverse_lazy("index")  # REDIRECT AFTER LOGIN
+LOGOUT_REDIRECT_URL = reverse_lazy("login")  # REDIRECT AFTER LOGOUT
 
 
 # Internationalization
